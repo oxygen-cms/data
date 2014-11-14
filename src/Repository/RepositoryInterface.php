@@ -80,4 +80,13 @@ interface RepositoryInterface {
 
     public function delete($entity);
 
+    /**
+     * Returns a reference to a specified item.
+     *
+     * @param int $id
+     * @return object
+     */
+
+    public function getReference($id);
+
 }

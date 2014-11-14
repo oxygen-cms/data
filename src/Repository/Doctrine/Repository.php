@@ -238,4 +238,14 @@ class Repository implements RepositoryInterface {
                     ->from($this->entityName, $alias, $indexBy);
     }
 
+    /**
+     * Returns a reference to a specified item.
+     *
+     * @param int $id
+     * @return object
+     */
+    public function getReference($id) {
+        return $this->entities->getReference($this->entityName, $id);
+    }
+
 }
