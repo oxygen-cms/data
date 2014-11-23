@@ -3,11 +3,61 @@
 namespace Oxygen\Data\Behaviour;
 
 use Carbon\Carbon;
-use Mitch\LaravelDoctrine\Traits\Timestamps as BaseTimestamps;
+use DateTime;
 
 trait Timestamps {
 
-    use BaseTimestamps;
+    /**
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @var \DateTime
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\PrePersist
+     */
+
+    public function prePersist() {
+        $now = new DateTime();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+
+    public function preUpdate() {
+        $this->updatedAt = new DateTime();
+    }
+
+    /**
+     * Sets when the entity was created.
+     *
+     * @param DateTime $createdAt
+     * @return void
+     */
+
+    public function setCreatedAt(DateTime $createdAt) {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * Sets when the entity was updated.
+     *
+     * @param DateTime $updatedAt
+     * @return void
+     */
+
+    public function setUpdatedAt(DateTime $updatedAt) {
+        $this->updatedAt = $updatedAt;
+    }
 
     /**
      * Returns when the entity was created.
@@ -16,7 +66,7 @@ trait Timestamps {
      */
 
     public function getCreatedAt() {
-        return new Carbon($this->createdAt->format('Y-m-d H:i:s'), $this->createdAt->getTimezone());
+        return Carbon::instance($this->createdAt);
     }
 
     /**
@@ -26,7 +76,7 @@ trait Timestamps {
      */
 
     public function getUpdatedAt() {
-        return new Carbon($this->updatedAt->format('Y-m-d H:i:s'), $this->updatedAt->getTimezone());
+        return Carbon::instance($this->updatedAt);
     }
 
 }
