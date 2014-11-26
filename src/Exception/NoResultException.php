@@ -11,10 +11,11 @@ class NoResultException extends RuntimeException {
      * Constructor.
      *
      * @param Exception $previous
+     * @param string $sql
      */
 
-    public function __construct(Exception $previous = null) {
-        parent::__construct('No result was found for query', 0, $previous);
+    public function __construct(Exception $previous = null, $sql) {
+        parent::__construct('No result was found for query (Query: "' . $sql . '")', 0, $previous);
     }
 
 }

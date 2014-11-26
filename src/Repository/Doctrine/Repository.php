@@ -239,11 +239,28 @@ class Repository implements RepositoryInterface {
     }
 
     /**
+     * Replaces placeholders within a given query with the actual values.
+     * Used for debugging.
+     *
+     * @param $query
+     * @param $parameters
+     * @return string
+     */
+
+    protected function replaceQueryParameters($query, $parameters) {
+        foreach($parameters as $parameter) {
+            $query = str_replace(':' . $parameter->getName(), $parameter->getValue(), $query);
+        }
+        return $query;
+    }
+
+    /**
      * Returns a reference to a specified item.
      *
      * @param int $id
      * @return object
      */
+
     public function getReference($id) {
         return $this->entities->getReference($this->entityName, $id);
     }
