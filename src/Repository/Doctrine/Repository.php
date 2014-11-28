@@ -90,11 +90,12 @@ class Repository implements RepositoryInterface {
      *
      * @param $key
      * @param $value
+     * @param array $scopes
      * @return array
      */
 
-    public function listKeysAndValues($key, $value) {
-        $results = $this->columns([$key, $value]);
+    public function listKeysAndValues($key, $value, $scopes = []) {
+        $results = $this->columns([$key, $value], $scopes);
 
         $return = [];
         foreach($results as $result) {

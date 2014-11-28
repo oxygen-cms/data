@@ -88,10 +88,11 @@ interface RepositoryInterface {
      *
      * @param $key
      * @param $value
+     * @param array $scopes
      * @return array
      */
 
-    public function listKeysAndValues($key, $value);
+    public function listKeysAndValues($key, $value, $scopes = []);
 
     /**
      * Returns a reference to a specified item.
