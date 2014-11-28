@@ -79,17 +79,29 @@ class Repository implements RepositoryInterface {
             ->from($this->entityName, 'o');
         $qb = $this->createScopedQueryBuilder($scopes, $qb);
 
-        $results = $qb->getQuery()->getResult();
+        return $qb->getQuery()->getResult();
+    }
 
-        if(isset($results[0]) && count($results[0]) === 2) {
-            $return = [];
-            foreach($results as $result) {
-                $return[$result[$fields[0]]] = $result[$fields[1]];
-            }
-            return $return;
-        } else {
-            return $results;
+    /**
+     * Lists columns of the entity like this:
+     *  1 => Title
+     *  3 => Foo
+     *  4 => Yoyo
+     *
+     * @param $key
+     * @param $value
+     * @return array
+     */
+
+    public function listKeysAndValues($key, $value) {
+        $results = $this->columns([$key, $value]);
+
+        $return = [];
+        foreach($results as $result) {
+            $return[$result[$key]] = $result[$value];
         }
+
+        return $return;
     }
 
     /**

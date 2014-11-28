@@ -81,6 +81,19 @@ interface RepositoryInterface {
     public function delete($entity);
 
     /**
+     * Lists columns of the entity like this:
+     *  1 => Title
+     *  3 => Foo
+     *  4 => Yoyo
+     *
+     * @param $key
+     * @param $value
+     * @return array
+     */
+
+    public function listKeysAndValues($key, $value);
+
+    /**
      * Returns a reference to a specified item.
      *
      * @param int $id
