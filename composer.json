@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "~4.2",
-        "jorrit77/laravel-doctrine": "~0.5",
+        "jorrit77/laravel-doctrine": "dev-master",
         "seld/jsonlint": "~1.0"
     },
     "autoload": {
