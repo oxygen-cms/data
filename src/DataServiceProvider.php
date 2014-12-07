@@ -30,6 +30,8 @@ class DataServiceProvider extends ServiceProvider {
                      );
         });
 
+        $this->app['events']->listen('oxygen.marketplace.postUpdate', 'Oxygen\Data\Schema\SchemaUpdateListener');
+
         $this->app->bind('Oxygen\Data\Pagination\PaginationService', 'Oxygen\Data\Pagination\Laravel\LaravelPaginationService');
     }
 
