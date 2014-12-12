@@ -16,15 +16,20 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "~4.2",
-        "jorrit77/laravel-doctrine": "dev-master",
+        "mitchellvanw/laravel-doctrine": "~0.5.0@dev",
         "seld/jsonlint": "~1.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/oxygen-cms/laravel-doctrine"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Oxygen\\Data\\": "src/"
         }
     },
-    "minimum-stability": "stable",
     "extra": {
         "title": "Oxygen Data",
         "readme": "oxygen.md",
