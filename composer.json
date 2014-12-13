@@ -19,12 +19,6 @@
         "mitchellvanw/laravel-doctrine": "~0.5.0@dev",
         "seld/jsonlint": "~1.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/oxygen-cms/laravel-doctrine"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Oxygen\\Data\\": "src/"
