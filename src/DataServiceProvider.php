@@ -43,7 +43,9 @@ class DataServiceProvider extends ServiceProvider {
 
     public function provides() {
         return [
-            'Doctrine\ORM\EntityManagerInterface'
+            'Oxygen\Marketplace\Marketplace',
+            'Doctrine\ORM\EntityManagerInterface',
+            'Oxygen\Data\Pagination\PaginationService'
         ];
     }
 
