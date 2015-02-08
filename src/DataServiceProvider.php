@@ -23,7 +23,7 @@ class DataServiceProvider extends ServiceProvider {
      */
 
     public function register() {
-        $this->app->resolving('Doctrine\ORM\EntityManagerInterface', function($entities) {
+        $this->app->resolving('Doctrine\ORM\EntityManager', function($entities) {
             $entities->getEventManager()
                      ->addEventSubscriber(
                          new ValidationSubscriber(new LaravelValidationService($this->app['validator']))
