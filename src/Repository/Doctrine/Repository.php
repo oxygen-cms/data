@@ -2,6 +2,7 @@
 
 namespace Oxygen\Data\Repository\Doctrine;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
@@ -262,7 +263,9 @@ class Repository implements RepositoryInterface {
 
     protected function replaceQueryParameters($query, $parameters) {
         foreach($parameters as $parameter) {
-            $query = str_replace(':' . $parameter->getName(), $parameter->getValue(), $query);
+            $value = $parameter->getValue();
+            $value = $value instanceof DateTime ? $value->format('Y-m-d H:i:s') : $value;
+            $query = str_replace(':' . $parameter->getName(), $value, $query);
         }
         return $query;
     }
