@@ -23,12 +23,17 @@ class DataServiceProvider extends ServiceProvider {
      */
 
     public function register() {
-        $this->app->resolving('Doctrine\ORM\EntityManager', function($entities) {
+        $function = function($entities) {
             $entities->getEventManager()
                      ->addEventSubscriber(
                          new ValidationSubscriber(new LaravelValidationService($this->app['validator']))
                      );
-        });
+        };
+        if($this->app->resolved('Doctrine\ORM\EntityManager')) {
+            $function($this->app['Doctrine\ORM\EntityManager']);
+        } else {
+            $this->app->resolving('Doctrine\ORM\EntityManager', $function);
+        }
 
         $this->app['events']->listen('oxygen.marketplace.postUpdate', 'Oxygen\Data\Schema\SchemaUpdateListener');
 
@@ -44,7 +49,7 @@ class DataServiceProvider extends ServiceProvider {
     public function provides() {
         return [
             'Oxygen\Marketplace\Marketplace',
-            'Doctrine\ORM\EntityManagerInterface',
+            'Doctrine\ORM\EntityManager',
             'Oxygen\Data\Pagination\PaginationService'
         ];
     }
