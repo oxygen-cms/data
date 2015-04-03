@@ -91,7 +91,7 @@ trait Versions {
      *
      * @param object $entity
      * @param string $version
-     * @return void
+     * @return boolean true if a new version was created
      */
 
     public function persist($entity, $version = 'guess') {
@@ -99,9 +99,14 @@ trait Versions {
 
         if($version === 'new' || ($version === 'guess' && $this->needsNewVersion($entity))) {
             $this->makeNewVersion($entity, false);
+            $return = true;
+        } else {
+            $return = false;
         }
 
         $this->entities->flush();
+
+        return $return;
     }
 
     /**
