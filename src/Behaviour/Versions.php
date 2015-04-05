@@ -72,5 +72,22 @@ trait Versions {
         return $this;
     }
 
+    /**
+     * Returns a validation rule that validates this entity for uniqueness, ignoring other versions.
+     *
+     * @param $field
+     * @return string
+     */
+    protected function getUniqueValidationRule($field) {
+        $rule = 'unique:' . get_class($this) . ',' . $field . ',' . $this->getHeadId() . ',id';
+
+        // ignore other versions of this entity
+        if($this->getHeadId()) {
+            $rule .= ',headVersion,!=,' . $this->getHeadId();
+        }
+
+        return $rule;
+    }
+
 }
 
