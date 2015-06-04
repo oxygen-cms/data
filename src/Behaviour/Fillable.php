@@ -13,7 +13,6 @@ trait Fillable {
      * @return void
      * @throws MassAssignmentException if the input tries to assign an not-fillable field.
      */
-
     public function fromArray(array $input) {
         $fillable = $this->getFillableFields();
 

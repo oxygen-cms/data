@@ -8,6 +8,7 @@ use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
+use Oxygen\Data\Repository\QueryParameters;
 use Oxygen\Data\Repository\RepositoryInterface;
 use Oxygen\Data\Pagination\PaginationService;
 
@@ -43,7 +44,6 @@ class Repository implements RepositoryInterface {
      * @param EntityManagerInterface   $entities
      * @param PaginationService        $paginator
      */
-
     public function __construct(EntityManagerInterface $entities, PaginationService $paginator) {
         $this->entities = $entities;
         $this->paginator = $paginator;
@@ -52,22 +52,24 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves all entities.
      *
-     * @param array|string   $scopes an optional array of query scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return mixed
      */
-
-    public function all($scopes = []) {
-        return $this->createScopedQueryBuilder($scopes)->getQuery()->getResult();
+    public function all(QueryParameters $queryParameters = null) {
+        return $this->getQuery(
+            $this->createSelectQuery(),
+            $queryParameters
+        )->getResult();
     }
 
     /**
      * Retrieves certain columns of entities.
      *
-     * @param array        $fields
-     * @param array|string $scopes an optional array of query scopes
+     * @param array           $fields
+     * @param QueryParameters $queryParameters an optional array of query scopes
      * @return mixed
      */
-    public function columns(array $fields, $scopes = []) {
+    public function columns(array $fields, QueryParameters $queryParameters = null) {
         $select = '';
         foreach($fields as $field) {
             $select .= 'o.' . $field;
@@ -75,10 +77,9 @@ class Repository implements RepositoryInterface {
                 $select .= ', ';
             }
         }
-        $qb = $this->entities->createQueryBuilder()
+        $qb = $this->entities->createQueryBuilder($queryParameters)
             ->select($select)
             ->from($this->entityName, 'o');
-        $qb = $this->createScopedQueryBuilder($scopes, $qb);
 
         return $qb->getQuery()->getResult();
     }
@@ -91,12 +92,11 @@ class Repository implements RepositoryInterface {
      *
      * @param $key
      * @param $value
-     * @param array $scopes
+     * @param QueryParameters $queryParameters
      * @return array
      */
-
-    public function listKeysAndValues($key, $value, $scopes = []) {
-        $results = $this->columns([$key, $value], $scopes);
+    public function listKeysAndValues($key, $value, QueryParameters $queryParameters = null) {
+        $results = $this->columns([$key, $value], $queryParameters);
 
         $return = [];
         foreach($results as $result) {
@@ -109,38 +109,39 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves all entities, by page.
      *
-     * @param int          $perPage     items per page
-     * @param array|string $scopes      an optional array of query scopes
-     * @param int          $currentPage current page that overrides the pagination service
+     * @param int             $perPage          items per page
+     * @param QueryParameters $queryParameters  an optional array of query scopes
+     * @param int             $currentPage      current page that overrides the pagination service
      * @return mixed
      */
-    public function paginate($perPage = 25, $scopes = [], $currentPage = null) {
+    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null) {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
-        $items = $this->createScopedQueryBuilder($scopes)
-            ->setFirstResult($perPage * ($currentPage - 1))
-            ->setMaxResults($perPage)
-            ->getQuery()
-            ->getResult();
+        $items = $this->getQuery(
+            $this->createSelectQuery()
+                ->setFirstResult($perPage * ($currentPage - 1))
+                ->setMaxResults($perPage),
+            $queryParameters
+        )->getResult();
 
-        return $this->paginator->make($items, $this->count($scopes), $perPage);
+        return $this->paginator->make($items, $this->count($queryParameters), $perPage);
     }
 
     /**
      * Retrieves a single entity.
      *
-     * @param integer       $id
-     * @param array|string  $scopes an optional array of query scopes
+     * @param integer         $id
+     * @param QueryParameters $queryParameters an optional array of query scopes
      * @return object
      * @throws NoResultException if no result was found
      */
-
-    public function find($id, $scopes = []) {
+    public function find($id, QueryParameters $queryParameters = null) {
         try {
-            return $this->createScopedQueryBuilder($scopes)
-                ->andWhere('o.id = :id')
-                ->setParameter('id', $id)
-                ->getQuery()
-                ->getSingleResult();
+            return $this->getQuery(
+                $this->createSelectQuery()
+                    ->andWhere('o.id = :id')
+                    ->setParameter('id', $id),
+                $queryParameters
+            )->getSingleResult();
         } catch(DoctrineNoResultException $e) {
             throw new NoResultException($e);
         }
@@ -151,7 +152,6 @@ class Repository implements RepositoryInterface {
      *
      * @return object
      */
-
     public function make() {
         return new $this->entityName();
     }
@@ -163,7 +163,6 @@ class Repository implements RepositoryInterface {
      * @param boolean $flush
      * @return void
      */
-
     public function persist($entity, $flush = true) {
         $this->entities->persist($entity);
         if($flush) {
@@ -176,7 +175,6 @@ class Repository implements RepositoryInterface {
      *
      * @return void
      */
-
     public function flush() {
         $this->entities->flush();
     }
@@ -188,7 +186,6 @@ class Repository implements RepositoryInterface {
      * @param  boolean $flush
      * @return void
      */
-
     public function delete($entity, $flush = true) {
         $this->entities->remove($entity);
         if($flush) {
@@ -199,18 +196,48 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves the number of records in the table.
      *
-     * @param array $scopes
+     * @param QueryParameters $queryParameters
      * @return integer
      */
+    public function count(QueryParameters $queryParameters = null) {
+        return (int) $this->getQuery(
+            $this->entities->createQueryBuilder()
+                ->select('count(o.id)')
+                ->from($this->entityName, 'o'),
+            $queryParameters
+        )->getSingleScalarResult();
+    }
 
-    public function count($scopes = []) {
+    /**
+     * Creates a new QueryBuilder instance that is pre-populated for this entity name.
+     *
+     * @param string $alias
+     * @param string $indexBy The index for the from.
+     *
+     * @return QueryBuilder
+     */
+    protected function createSelectQuery($alias = 'o', $indexBy = null) {
         $qb = $this->entities->createQueryBuilder()
-            ->select('count(o.id)')
-            ->from($this->entityName, 'o');
+                             ->select($alias)
+                             ->from($this->entityName, $alias, $indexBy);
 
-        return (int) $this->createScopedQueryBuilder($scopes, $qb)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $qb;
+    }
+
+    /**
+     * @param \Doctrine\ORM\QueryBuilder              $qb
+     * @param \Oxygen\Data\Repository\QueryParameters $queryParameters
+     * @return \Doctrine\ORM\Query
+     */
+    protected function getQuery(QueryBuilder $qb, QueryParameters $queryParameters = null, $alias = 'o') {
+        if($queryParameters != null) {
+            $this->applyScopesToQueryBuilder($qb, $queryParameters->getScopes());
+            if($queryParameters->getOrderBy() != null) {
+                $this->applyOrderByToQueryBuilder($qb, $queryParameters->getOrderBy(), $alias);
+            }
+        }
+
+        return $qb->getQuery();
     }
 
     /**
@@ -222,11 +249,7 @@ class Repository implements RepositoryInterface {
      * @throws InvalidArgumentException if the scope was not found
      * @return QueryBuilder
      */
-
-    protected function createScopedQueryBuilder($scopes, $qb = null) {
-        if($qb === null) {
-            $qb = $this->createQueryBuilder();
-        }
+    protected function applyScopesToQueryBuilder(QueryBuilder $qb, array $scopes) {
         foreach((array) $scopes as $scope) {
             $method = 'scope' . ucfirst($scope);
             if(method_exists($this, $method)) {
@@ -239,17 +262,16 @@ class Repository implements RepositoryInterface {
     }
 
     /**
-     * Creates a new QueryBuilder instance that is pre-populated for this entity name.
+     * Applies the order by request to the query builder.
      *
-     * @param string $alias
-     * @param string $indexBy The index for the from.
-     * @return QueryBuilder
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder
+     * @param array                      $orderBy
+     * @param string                     $alias
+     * @return \Doctrine\ORM\QueryBuilder
      */
-
-    protected function createQueryBuilder($alias = 'o', $indexBy = null) {
-        return $this->entities->createQueryBuilder()
-                    ->select($alias)
-                    ->from($this->entityName, $alias, $indexBy);
+    private function applyOrderByToQueryBuilder(QueryBuilder $queryBuilder, array $orderBy, $alias) {
+        $queryBuilder->orderBy($alias . '.' . $orderBy[0], $orderBy[1]);
+        return $queryBuilder;
     }
 
     /**
@@ -260,7 +282,6 @@ class Repository implements RepositoryInterface {
      * @param $parameters
      * @return string
      */
-
     protected function replaceQueryParameters($query, $parameters) {
         foreach($parameters as $parameter) {
             $value = $parameter->getValue();
@@ -276,7 +297,6 @@ class Repository implements RepositoryInterface {
      * @param int $id
      * @return object
      */
-
     public function getReference($id) {
         return $this->entities->getReference($this->entityName, $id);
     }

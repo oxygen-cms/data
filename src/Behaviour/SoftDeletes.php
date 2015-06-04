@@ -19,7 +19,6 @@ trait SoftDeletes {
      *
      * @return Carbon
      */
-
     public function getDeletedAt() {
         return new Carbon($this->deletedAt->format('Y-m-d H:i:s'), $this->deletedAt->getTimezone());
     }
@@ -30,7 +29,6 @@ trait SoftDeletes {
      * @param DateTime $deletedAt
      * @return $this
      */
-
     public function setDeletedAt(DateTime $deletedAt) {
         $this->deletedAt = $deletedAt;
         return $this;
@@ -41,7 +39,6 @@ trait SoftDeletes {
      *
      * @return void
      */
-
     public function delete() {
         $this->deletedAt = new DateTime();
     }
@@ -51,7 +48,6 @@ trait SoftDeletes {
      *
      * @return void
      */
-
     public function restore() {
         $this->deletedAt = null;
     }
@@ -61,7 +57,6 @@ trait SoftDeletes {
      *
      * @return boolean
      */
-
     public function isDeleted() {
         return $this->deletedAt !== null &&
                new DateTime() > $this->deletedAt;

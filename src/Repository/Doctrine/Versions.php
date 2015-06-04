@@ -14,7 +14,6 @@ trait Versions {
      * @param  boolean $flush
      * @return object  The new version
      */
-
     public function makeNewVersion($entity, $flush = true) {
         $new = clone $entity;
         $new->setHead($entity->getHead());
@@ -31,7 +30,6 @@ trait Versions {
      * @param object $entity
      * @return boolean
      */
-
     public function makeHeadVersion($entity) {
         if($entity->isHead()) {
             return false;
@@ -93,7 +91,6 @@ trait Versions {
      * @param string $version
      * @return boolean true if a new version was created
      */
-
     public function persist($entity, $version = 'guess') {
         $this->entities->persist($entity);
 
@@ -115,7 +112,6 @@ trait Versions {
      * @param object $entity
      * @return object
      */
-
     public function clearVersions($entity) {
         $entity = $entity->getHead();
         $versions = $entity->getVersions();

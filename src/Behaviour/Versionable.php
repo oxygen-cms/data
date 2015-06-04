@@ -11,7 +11,6 @@ interface Versionable {
      *
      * @return Collection
      */
-
     public function getVersions();
 
     /**
@@ -19,7 +18,6 @@ interface Versionable {
      *
      * @return boolean
      */
-
     public function hasVersions();
 
     /**
@@ -27,7 +25,6 @@ interface Versionable {
      *
      * @return boolean
      */
-
     public function isHead();
 
     /**
@@ -35,7 +32,6 @@ interface Versionable {
      *
      * @return integer
      */
-
     public function getHeadId();
 
     /**
@@ -43,7 +39,6 @@ interface Versionable {
      *
      * @return object
      */
-
     public function getHead();
 
     /**
@@ -52,7 +47,6 @@ interface Versionable {
      * @param object $head
      * @return $this
      */
-
     public function setHead($head);
 
 }

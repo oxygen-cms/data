@@ -22,7 +22,6 @@ trait Timestamps {
     /**
      * @ORM\PrePersist
      */
-
     public function prePersist() {
         $now = new DateTime();
         $this->createdAt = $now;
@@ -32,7 +31,6 @@ trait Timestamps {
     /**
      * @ORM\PreUpdate
      */
-
     public function preUpdate() {
         $this->updatedAt = new DateTime();
     }
@@ -43,7 +41,6 @@ trait Timestamps {
      * @param DateTime $createdAt
      * @return void
      */
-
     public function setCreatedAt(DateTime $createdAt) {
         $this->createdAt = $createdAt;
     }
@@ -54,7 +51,6 @@ trait Timestamps {
      * @param DateTime $updatedAt
      * @return void
      */
-
     public function setUpdatedAt(DateTime $updatedAt) {
         $this->updatedAt = $updatedAt;
     }
@@ -64,7 +60,6 @@ trait Timestamps {
      *
      * @return Carbon
      */
-
     public function getCreatedAt() {
         return Carbon::instance($this->createdAt);
     }
@@ -74,7 +69,6 @@ trait Timestamps {
      *
      * @return Carbon
      */
-
     public function getUpdatedAt() {
         return Carbon::instance($this->updatedAt);
     }

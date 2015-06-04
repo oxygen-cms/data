@@ -17,7 +17,6 @@ trait RememberToken {
      *
      * @return string
      */
-
     public function getRememberToken() {
         return $this->rememberToken;
     }
@@ -28,7 +27,6 @@ trait RememberToken {
      * @param  string $value
      * @return void
      */
-
     public function setRememberToken($value) {
         $this->rememberToken = $value;
     }
@@ -38,7 +36,6 @@ trait RememberToken {
      *
      * @return string
      */
-
     public function getRememberTokenName() {
         return 'rememberToken';
     }

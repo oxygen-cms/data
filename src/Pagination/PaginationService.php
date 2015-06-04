@@ -9,7 +9,6 @@ interface PaginationService {
      *
      * @return integer
      */
-
     public function getCurrentPage();
 
     /**
@@ -20,7 +19,6 @@ interface PaginationService {
      * @param int   $perPage
      * @return object
      */
-
     public function make(array $items, $totalItems, $perPage);
 
 }

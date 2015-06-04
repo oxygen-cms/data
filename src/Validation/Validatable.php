@@ -9,7 +9,6 @@ interface Validatable {
      *
      * @return array
      */
-
     public function getValidationRules();
 
 }

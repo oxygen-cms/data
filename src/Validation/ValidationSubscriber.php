@@ -22,7 +22,6 @@ class ValidationSubscriber implements EventSubscriber {
      *
      * @param ValidationService $validator
      */
-
     public function __construct(ValidationService $validator) {
         $this->validator = $validator;
     }
@@ -32,7 +31,6 @@ class ValidationSubscriber implements EventSubscriber {
      *
      * @return array
      */
-
     public function getSubscribedEvents() {
         return [Events::prePersist, Events::preUpdate];
     }

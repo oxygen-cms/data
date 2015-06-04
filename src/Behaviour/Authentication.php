@@ -19,7 +19,6 @@ trait Authentication {
      *
      * @return mixed
      */
-
     public function getPassword() {
         return $this->password;
     }
@@ -30,7 +29,6 @@ trait Authentication {
      * @param string $password
      * @return void
      */
-
     public function setPassword($password) {
         $this->password = $password;
     }
@@ -40,7 +38,6 @@ trait Authentication {
      *
      * @return mixed
      */
-
     public function getAuthIdentifier() {
         return $this->getId();
     }
@@ -50,7 +47,6 @@ trait Authentication {
      *
      * @return string
      */
-
     public function getAuthPassword() {
         return $this->getPassword();
     }
@@ -60,7 +56,6 @@ trait Authentication {
      *
      * @return string
      */
-
     public function getKeyName() {
         return 'id';
     }

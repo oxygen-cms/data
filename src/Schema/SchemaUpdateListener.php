@@ -15,7 +15,6 @@ class SchemaUpdateListener {
      * @param SchemaTool           $schema
      * @param ClassMetadataFactory $metadata
      */
-
     public function __construct(SchemaTool $schema, ClassMetadataFactory $metadata) {
         $this->schema = $schema;
         $this->metadata = $metadata;
@@ -27,7 +26,6 @@ class SchemaUpdateListener {
      * @param ProgressInterface $progress
      * @param OutputInterface   $output
      */
-
     public function handle($progress, $output) {
         $progress->section('Updating Database Schema');
         $progress->indeterminate();

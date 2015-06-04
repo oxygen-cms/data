@@ -29,7 +29,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      *
      * @param callable $entitiesFactory
      */
-
     public function __construct(callable $entitiesFactory) {
         $this->factory = $entitiesFactory;
     }
@@ -45,7 +44,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param  array $extra
      * @return int
      */
-
     public function getCount($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = []) {
         $idColumn = $idColumn !== null ? $idColumn : 'id';
 
@@ -74,7 +72,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param  array $extra
      * @return int
      */
-
     public function getMultiCount($collection, $column, array $values, array $extra = []) {
         $qb = $this->createCountQuery($collection)
                    ->where('o.', $column . ' IN (:values)')

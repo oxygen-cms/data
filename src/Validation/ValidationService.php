@@ -11,7 +11,6 @@ interface ValidationService {
      * @param array $rules
      * @return mixed
      */
-
     public function with(array $data, array $rules);
 
     /**
@@ -19,7 +18,6 @@ interface ValidationService {
      *
      * @return boolean
      */
-
     public function passes();
 
     /**
@@ -27,7 +25,6 @@ interface ValidationService {
      *
      * @return array
      */
-
     public function errors();
 
 }

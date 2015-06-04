@@ -9,49 +9,44 @@ interface RepositoryInterface {
     /**
      * Retrieves all entities.
      *
-     * @param array|string  $scopes an optional array of query scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return mixed
      */
-
-    public function all($scopes = []);
+    public function all(QueryParameters $queryParameters = null);
 
     /**
      * Retrieves certain columns of entities.
      *
      * @param array $fields
-     * @param array|string  $scopes an optional array of query scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return mixed
      */
-
-    public function columns(array $fields, $scopes = []);
+    public function columns(array $fields, QueryParameters $queryParameters = null);
 
     /**
      * Retrieves all entities, by page.
      *
      * @param int          $perPage
-     * @param array|string $scopes an optional array of query scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return mixed
      */
-
-    public function paginate($perPage = 25, $scopes = []);
+    public function paginate($perPage = 25, QueryParameters $queryParameters = null);
 
     /**
      * Retrieves a single entity.
      *
      * @param integer       $id
-     * @param array|string  $scopes an optional array of query scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return object
      * @throws NoResultException if no result was found
      */
-
-    public function find($id, $scopes = []);
+    public function find($id, QueryParameters $queryParameters = null);
 
     /**
      * Creates a new entity
      *
      * @return object
      */
-
     public function make();
 
     /**
@@ -60,7 +55,6 @@ interface RepositoryInterface {
      * @param object $entity
      * @return void
      */
-
     public function persist($entity);
 
     /**
@@ -68,7 +62,6 @@ interface RepositoryInterface {
      *
      * @return void
      */
-
     public function flush();
 
     /**
@@ -77,7 +70,6 @@ interface RepositoryInterface {
      * @param object $entity
      * @return void
      */
-
     public function delete($entity);
 
     /**
@@ -88,11 +80,10 @@ interface RepositoryInterface {
      *
      * @param $key
      * @param $value
-     * @param array $scopes
+     * @param QueryParameters  $queryParameters extra query parameters
      * @return array
      */
-
-    public function listKeysAndValues($key, $value, $scopes = []);
+    public function listKeysAndValues($key, $value, QueryParameters $queryParameters = null);
 
     /**
      * Returns a reference to a specified item.
@@ -100,7 +91,6 @@ interface RepositoryInterface {
      * @param int $id
      * @return object
      */
-
     public function getReference($id);
 
 }

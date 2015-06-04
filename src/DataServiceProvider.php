@@ -21,7 +21,6 @@ class DataServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-
     public function register() {
         $function = function($entities) {
             $entities->getEventManager()
@@ -45,7 +44,6 @@ class DataServiceProvider extends ServiceProvider {
      *
      * @return array
      */
-
     public function provides() {
         return [
             'Oxygen\Marketplace\Marketplace',

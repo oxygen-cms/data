@@ -30,7 +30,6 @@ class LaravelPaginationService implements PaginationService {
      * @param Factory $factory
      * @param Request $request
      */
-
     public function __construct(Factory $factory, Request $request) {
         $this->factory = $factory;
         $this->request = $request;
@@ -53,7 +52,6 @@ class LaravelPaginationService implements PaginationService {
      * @param int   $perPage
      * @return object
      */
-
     public function make(array $items, $totalItems, $perPage) {
         return $this->factory->make($items, $totalItems, $perPage);
     }

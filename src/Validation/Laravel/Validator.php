@@ -66,7 +66,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateSlug($attribute, $value, $parameters) {
         return preg_match('#^[a-z0-9/\-]+$#', $value);
     }
@@ -81,7 +80,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateSlugExtended($attribute, $value, $parameters) {
         return preg_match('#^[a-z0-9/\-.]+$#', $value);
     }
@@ -96,7 +94,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateSlugExtendedNoDir($attribute, $value, $parameters) {
         return preg_match('#^[a-z0-9\-.]+$#', $value);
     }
@@ -109,7 +106,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateAlphaDot($attribue, $value, $parameters) {
         return preg_match('/^[\pL\pM\pN\.]+$/u', $value);
     }
@@ -122,7 +118,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateName($attribue, $value, $parameters) {
         return preg_match('/^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð& ,.\'-]+$/u', $value);
     }
@@ -135,7 +130,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateJson($attribute, $value, $parameters) {
         $parser = new JsonParser();
         $exception = $parser->lint($value);
@@ -156,7 +150,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateHashesTo($attribute, $value, $parameters) {
         $this->requireParameterCount(1, $parameters, 'hashes_to');
 
@@ -171,7 +164,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateViewExists($attribute, $value, $parameters) {
         return $this->view->exists($value);
     }
@@ -185,7 +177,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return string
      */
-
     public function replaceViewExists($message, $attribute, $rule, $parameters) {
         return str_replace(':view', $this->getValue($attribute), $message);
     }
@@ -199,7 +190,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-
     public function validateRouteExists($attribute, $value, $parameters) {
         $method = 'getBy' . studly_case(isset($parameters[0]) ? $parameters[0] : 'name');
         $routes = $this->router->getRoutes();
@@ -215,7 +205,6 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return string
      */
-
     public function replaceRouteExists($message, $attribute, $rule, $parameters) {
         return str_replace(':route', $this->getValue($attribute), $message);
     }

@@ -11,7 +11,6 @@ trait Versions {
      *
      * @return Collection
      */
-
     public function getVersions() {
         if($this->isHead()) {
             return $this->versions;
@@ -25,7 +24,6 @@ trait Versions {
      *
      * @return boolean
      */
-
     public function hasVersions() {
         return !$this->getVersions()->isEmpty();
     }
@@ -35,7 +33,6 @@ trait Versions {
      *
      * @return boolean
      */
-
     public function isHead() {
         return $this->headVersion === null;
     }
@@ -45,7 +42,6 @@ trait Versions {
      *
      * @return integer
      */
-
     public function getHeadId() {
         return $this->isHead() ? $this->getId() : $this->headVersion->getId();
     }
@@ -55,7 +51,6 @@ trait Versions {
      *
      * @return object
      */
-
     public function getHead() {
         return ($this->isHead()) ? $this : $this->headVersion;
     }
@@ -66,7 +61,6 @@ trait Versions {
      * @param object $head
      * @return $this
      */
-
     public function setHead($head) {
         $this->headVersion = $head;
         return $this;

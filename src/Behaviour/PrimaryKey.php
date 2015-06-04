@@ -17,7 +17,6 @@ trait PrimaryKey {
      *
      * @return integer
      */
-
     public function getId() {
         return $this->id;
     }
@@ -27,7 +26,6 @@ trait PrimaryKey {
      *
      * @return void
      */
-
     public function __clone() {
         $this->id = null;
     }

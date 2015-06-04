@@ -11,7 +11,6 @@ trait Publishable {
      * @param  boolean $flush
      * @return object  The new version
      */
-
     public function makeDraftOfVersion($entity, $flush = true) {
         $new = clone $entity;
         $new->setHead($entity->getHead());
@@ -30,7 +29,6 @@ trait Publishable {
      * @param string $version
      * @return boolean true if a new version was created
      */
-
     public function persist($entity, $version = 'guess') {
         $this->entities->persist($entity);
         

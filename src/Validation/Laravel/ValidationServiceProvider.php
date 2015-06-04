@@ -20,7 +20,6 @@ class ValidationServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-
     public function boot() {
         $app = $this->app;
 
@@ -43,7 +42,6 @@ class ValidationServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-
     public function register() {
         $this->registerPresenceVerifier();
 

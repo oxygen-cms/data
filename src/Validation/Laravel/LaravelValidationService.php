@@ -30,7 +30,6 @@ class LaravelValidationService implements ValidationService {
      *
      * @param Factory $factory
      */
-
     public function __construct(Factory $factory) {
         $this->factory = $factory;
     }
@@ -51,7 +50,6 @@ class LaravelValidationService implements ValidationService {
      *
      * @return boolean
      */
-
     public function passes() {
         return $this->validator->passes();
     }
@@ -61,7 +59,6 @@ class LaravelValidationService implements ValidationService {
      *
      * @return MessageBag
      */
-
     public function errors() {
         return $this->validator->errors();
     }

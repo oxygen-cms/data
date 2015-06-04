@@ -29,7 +29,6 @@ class InvalidEntityException extends Exception {
      * @param object      $entity the invalid entity
      * @param MessageBag  $errors
      */
-
     public function __construct($entity, MessageBag $errors) {
         parent::__construct('Invalid Entity: ' . $errors->first());
         $this->entity = $entity;
@@ -41,7 +40,6 @@ class InvalidEntityException extends Exception {
      *
      * @return object
      */
-
     public function getEntity() {
         return $this->entity;
     }
@@ -51,7 +49,6 @@ class InvalidEntityException extends Exception {
      *
      * @return array
      */
-
     public function getErrors() {
         return $this->errors;
     }
