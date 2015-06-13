@@ -1,8 +1,8 @@
 <?php
 
-    namespace Oxygen\Data\Behaviour;
+namespace Oxygen\Data\Behaviour;
 
-    trait Publishable {
+trait Publishes {
 
         /**
          * @ORM\Column(type="integer", nullable=true)

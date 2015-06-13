@@ -2,7 +2,7 @@
 
 namespace Oxygen\Data\Repository\Doctrine;
 
-trait Publishable {
+trait Publishes {
 
     /**
      * Makes a new version of the given entity.
