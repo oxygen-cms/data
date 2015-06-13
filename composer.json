@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "~5.1",
-        "mitchellvanw/laravel-doctrine": "dev-lazyLoad",
+        "mitchellvanw/laravel-doctrine": "dev-master",
         "seld/jsonlint": "~1.0"
     },
     "autoload": {
