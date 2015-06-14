@@ -16,7 +16,7 @@ class ValidationServiceProvider extends ServiceProvider {
     public function boot() {
         $app = $this->app;
 
-        $this->app->validator->resolver(function($translator, $data, $rules, $messages) use($app) {
+        $this->app['validator']->resolver(function($translator, $data, $rules, $messages) use($app) {
             $validator = new Validator(
                 $translator,
                 $app->make('Illuminate\Hashing\HasherInterface'),
@@ -66,7 +66,7 @@ class ValidationServiceProvider extends ServiceProvider {
             // The validation presence verifier is responsible for determining the existence
             // of values in a given data collection, typically a relational database or
             // other persistent data stores. And it is used to check for uniqueness.
-            if (isset($app['validation.presence'])) {
+            if(isset($app['validation.presence'])) {
                 $validator->setPresenceVerifier($app['validation.presence']);
             }
 
