@@ -4,34 +4,24 @@ namespace Oxygen\Data\Pagination\Laravel;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Factory;
+use Illuminate\Pagination\Paginator;
 use Oxygen\Data\Pagination\PaginationService;
 
 class LaravelPaginationService implements PaginationService {
-
-    /**
-     * The Pagination Factory.
-     *
-     * @var Factory
-     */
-
-    protected $factory;
 
     /**
      * The Http Request
      *
      * @var Request
      */
-
     protected $request;
 
     /**
      * Constructs the LaravelValidationService.
      *
-     * @param Factory $factory
      * @param Request $request
      */
-    public function __construct(Factory $factory, Request $request) {
-        $this->factory = $factory;
+    public function __construct(Request $request) {
         $this->request = $request;
     }
 
@@ -53,6 +43,6 @@ class LaravelPaginationService implements PaginationService {
      * @return object
      */
     public function make(array $items, $totalItems, $perPage) {
-        return $this->factory->make($items, $totalItems, $perPage);
+        return new Paginator($items, $totalItems, $perPage);
     }
 }
