@@ -36,7 +36,7 @@ class Repository implements RepositoryInterface {
      * @var string
      */
 
-    protected $entityName;
+    protected $entityName = 'Undefined';
 
     /**
      * Constructs the DoctrineRepository.
