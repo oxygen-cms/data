@@ -16,7 +16,7 @@ class Validator extends BaseValidator {
     /**
      * The Hasher implementation.
      *
-     * @var \Illuminate\Hashing\HasherInterface
+     * @var \Illuminate\Contracts\Hashing\Hasher
      */
 
     protected $hasher;

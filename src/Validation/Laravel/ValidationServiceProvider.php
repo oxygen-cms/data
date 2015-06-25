@@ -2,6 +2,7 @@
 
 namespace Oxygen\Data\Validation\Laravel;
 
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
@@ -19,7 +20,7 @@ class ValidationServiceProvider extends ServiceProvider {
         $this->app['validator']->resolver(function($translator, $data, $rules, $messages) use($app) {
             $validator = new Validator(
                 $translator,
-                $app->make('Illuminate\Hashing\HasherInterface'),
+                $app->make(Hasher::class),
                 $app['view'],
                 $app['router'],
                 $data,
