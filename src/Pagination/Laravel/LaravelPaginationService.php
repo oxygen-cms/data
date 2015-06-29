@@ -4,6 +4,7 @@ namespace Oxygen\Data\Pagination\Laravel;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Factory;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Oxygen\Data\Pagination\PaginationService;
 
@@ -43,6 +44,6 @@ class LaravelPaginationService implements PaginationService {
      * @return object
      */
     public function make(array $items, $totalItems, $perPage) {
-        return new Paginator($items, $totalItems, $perPage);
+        return new LengthAwarePaginator($items, $totalItems, $perPage);
     }
 }
