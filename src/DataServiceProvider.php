@@ -2,7 +2,10 @@
 
 namespace Oxygen\Data;
 
+use Doctrine\ORM\EntityManager;
 use Illuminate\Support\ServiceProvider;
+use Oxygen\Data\Pagination\Laravel\LaravelPaginationService;
+use Oxygen\Data\Pagination\PaginationService;
 use Oxygen\Data\Validation\Laravel\LaravelValidationService;
 use Oxygen\Data\Validation\ValidationSubscriber;
 
@@ -28,13 +31,13 @@ class DataServiceProvider extends ServiceProvider {
                          new ValidationSubscriber(new LaravelValidationService($this->app['validator']))
                      );
         };
-        if($this->app->resolved('Doctrine\ORM\EntityManager')) {
-            $function($this->app['Doctrine\ORM\EntityManager']);
+        if($this->app->resolved(EntityManager::class)) {
+            $function($this->app[EntityManager::class]);
         } else {
-            $this->app->resolving('Doctrine\ORM\EntityManager', $function);
+            $this->app->resolving(EntityManager::class, $function);
         }
 
-        $this->app->bind('Oxygen\Data\Pagination\PaginationService', 'Oxygen\Data\Pagination\Laravel\LaravelPaginationService');
+        $this->app->bind(PaginationService::class, LaravelPaginationService::class);
     }
 
     /**
@@ -44,9 +47,8 @@ class DataServiceProvider extends ServiceProvider {
      */
     public function provides() {
         return [
-            'Oxygen\Marketplace\Marketplace',
-            'Doctrine\ORM\EntityManager',
-            'Oxygen\Data\Pagination\PaginationService'
+            EntityManager::class,
+            PaginationService::class
         ];
     }
 
