@@ -31,6 +31,11 @@
         "icon": "icon.png",
         "providers": [
             {
+                "name": "Data",
+                "class": "Oxygen\\Data\\DataServiceProvider",
+                "description": "Doctrine ORM extensions and pagination"
+            },
+            {
                 "name": "Validation",
                 "class": "Oxygen\\Data\\Validation\\Laravel\\ValidationServiceProvider",
                 "description": "Custom Validation Framework"
