@@ -123,25 +123,6 @@ class Validator extends BaseValidator {
     }
 
     /**
-     * Check if the value is valid JSON.
-     *
-     * @param  string  $attribute
-     * @param  mixed   $value
-     * @param  array   $parameters
-     * @return bool
-     */
-    public function validateJson($attribute, $value, $parameters) {
-        $parser = new JsonParser();
-        $exception = $parser->lint($value);
-
-        if($exception instanceof ParsingException) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Check the field is the given value.
      *
      *
