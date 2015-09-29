@@ -11,7 +11,6 @@ trait Authentication {
     /**
      * @ORM\Column(type="string")
      */
-
     private $password;
 
     /**
