@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Illuminate\Support\ServiceProvider;
 use Oxygen\Data\Pagination\Laravel\LaravelPaginationService;
 use Oxygen\Data\Pagination\PaginationService;
+use Oxygen\Data\Subscriber\CacheInvalidationSubscriber;
 use Oxygen\Data\Validation\Laravel\LaravelValidationService;
 use Oxygen\Data\Validation\ValidationSubscriber;
 
@@ -27,9 +28,8 @@ class DataServiceProvider extends ServiceProvider {
     public function register() {
         $function = function($entities) {
             $entities->getEventManager()
-                     ->addEventSubscriber(
-                         new ValidationSubscriber(new LaravelValidationService($this->app['validator']))
-                     );
+                ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])))
+                ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events']));
         };
         if($this->app->resolved(EntityManager::class)) {
             $function($this->app[EntityManager::class]);

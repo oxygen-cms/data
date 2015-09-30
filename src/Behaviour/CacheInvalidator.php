@@ -16,7 +16,19 @@ trait CacheInvalidator {
      * @return array
      */
     public function getCacheInvalidationSettings() {
+        if($this->cacheInvalidationSettings == null) {
+            $this->cacheInvalidationSettings = '[]';
+        }
         return json_decode($this->cacheInvalidationSettings, true);
+    }
+
+    /**
+     * Returns a list of the entities whose caches will be invalidated when this entity is updated.
+     *
+     * @return array
+     */
+    public function getEntitiesToBeInvalidated() {
+        return $this->getCacheInvalidationSettings();
     }
 
     /**
@@ -31,22 +43,11 @@ trait CacheInvalidator {
     }
 
     /**
-     * Determines if `$object` has been registered to be invalidated when `$this` changes.
-     *
-     * @param \Oxygen\Data\Behaviour\PrimaryKeyInterface $object
-     * @return bool
-     */
-    public function hasEntityRegisteredForCacheInvalidation(PrimaryKeyInterface $object) {
-        $settings = $this->getCacheInvalidationSettings();
-        return array_search(['id' => $object->getId(), 'class' => get_class($object)], $settings, true);
-    }
-
-    /**
      * Lets `$this` know that all the caches of `$object` should be invalidated whenever `$this` changes.
      *
      * @param \Oxygen\Data\Behaviour\PrimaryKeyInterface $object
      */
-    public function addEntityForCacheInvalidation(PrimaryKeyInterface $object) {
+    public function addEntityToBeInvalidated(PrimaryKeyInterface $object) {
         $settings = $this->getCacheInvalidationSettings();
         $info = $this->getInfo($object);
         if(array_search($info, $settings, true)) { return; }
@@ -59,7 +60,7 @@ trait CacheInvalidator {
      *
      * @param \Oxygen\Data\Behaviour\PrimaryKeyInterface $object
      */
-    public function removeEntityForCacheInvalidation(PrimaryKeyInterface $object) {
+    public function removeEntityToBeInvalidated(PrimaryKeyInterface $object) {
         $settings = $this->getCacheInvalidationSettings();
         $info = $this->getInfo($object);
         $settings = array_filter($settings, function($value) use($info) {
