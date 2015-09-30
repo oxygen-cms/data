@@ -50,7 +50,7 @@ trait CacheInvalidator {
     public function addEntityToBeInvalidated(PrimaryKeyInterface $object) {
         $settings = $this->getCacheInvalidationSettings();
         $info = $this->getInfo($object);
-        if(array_search($info, $settings, true)) { return; }
+        if(array_search($info, $settings)) { return; }
         $settings[] = $info;
         $this->setCacheInvalidationSettings($settings);
     }
