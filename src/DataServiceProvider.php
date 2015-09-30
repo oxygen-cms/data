@@ -28,7 +28,8 @@ class DataServiceProvider extends ServiceProvider {
     public function register() {
         $function = function($entities) {
             $entities->getEventManager()
-                ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])))
+                ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
+            $entities->getEventManager()
                 ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events']));
         };
         if($this->app->resolved(EntityManager::class)) {
