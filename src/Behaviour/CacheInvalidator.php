@@ -50,8 +50,11 @@ trait CacheInvalidator {
     public function addEntityToBeInvalidated(PrimaryKeyInterface $object) {
         $settings = $this->getCacheInvalidationSettings();
         $info = $this->getInfo($object);
-        if(array_search($info, $settings)) { return; }
         $settings[] = $info;
+
+        // removes duplicates from the array
+        $settings = array_intersect_key($settings, array_unique(array_map('serialize', $settings)));
+
         $this->setCacheInvalidationSettings($settings);
     }
 

@@ -3,10 +3,11 @@
 namespace Oxygen\Data\Subscriber;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Illuminate\Contracts\Events\Dispatcher;
-use Oxygen\Data\Behaviour\CacheInvalidator;
+use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 
 class CacheInvalidationSubscriber implements EventSubscriber {
 
@@ -45,7 +46,7 @@ class CacheInvalidationSubscriber implements EventSubscriber {
      * @return void
      */
     public function preUpdate(LifecycleEventArgs $args) {
-        $this->invalidate($args->getEntity());
+        $this->invalidate($args->getEntityManager(), $args->getEntity());
     }
 
     /**
@@ -55,20 +56,23 @@ class CacheInvalidationSubscriber implements EventSubscriber {
      * @return void
      */
     public function preRemove(LifecycleEventArgs $args) {
-        $this->invalidate($args->getEntity());
+        $this->invalidate($args->getEntityManager(), $args->getEntity());
     }
 
     /**
      * Invalidates the cache.
      *
-     * @param object $entity
+     * @param \Doctrine\ORM\EntityManager $em
+     * @param object                      $entity
      */
-    protected function invalidate($entity) {
+    protected function invalidate(EntityManager $em, $entity) {
         $this->events->fire('oxygen.entity.cache.invalidated', [$entity]);
 
-        if($entity instanceof CacheInvalidator) {
+        if($entity instanceof CacheInvalidatorInterface) {
             foreach($entity->getEntitiesToBeInvalidated() as $entity) {
-                $this->invalidate($entity);
+                $repo = $em->getRepository($entity['class']);
+                $item = $repo->find($entity['id']);
+                $this->invalidate($em, $item);
             }
         }
     }
