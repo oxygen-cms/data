@@ -65,7 +65,7 @@ class CacheInvalidationSubscriber implements EventSubscriber {
      * @param \Doctrine\ORM\EntityManager $em
      * @param object                      $entity
      */
-    protected function invalidate(EntityManager $em, $entity) {
+    public function invalidate(EntityManager $em, $entity) {
         $this->events->fire('oxygen.entity.cache.invalidated', [$entity]);
 
         if($entity instanceof CacheInvalidatorInterface) {
