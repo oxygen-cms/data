@@ -7,9 +7,13 @@ use Doctrine\ORM\Mapping AS ORM;
 trait RememberToken {
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected $email;
+
+    /**
      * @ORM\Column(name="remember_token", type="string", nullable=true)
      */
-
     private $rememberToken;
 
     /**
