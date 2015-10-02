@@ -41,7 +41,6 @@ class DataServiceProvider extends ServiceProvider {
         }
 
         $this->app->bind(PaginationService::class, LaravelPaginationService::class);
-        $this->app->bind(CacheSettingsRepositoryInterface::class, StubCacheSettingsRepository::class);
     }
 
     /**
