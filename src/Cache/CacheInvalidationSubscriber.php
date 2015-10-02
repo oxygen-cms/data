@@ -73,7 +73,7 @@ class CacheInvalidationSubscriber implements EventSubscriber {
         $this->events->fire('oxygen.entity.cache.invalidated', [$entity]);
 
         // if the cache depends on any entities of a given type
-        foreach($this->cacheSettings->getForEntity(get_class($entity)) as $entity) {
+        foreach($this->cacheSettings->get(get_class($entity)) as $entity) {
             $this->invalidate($em, $this->find($em, $entity));
         }
 

@@ -5,7 +5,7 @@ namespace Oxygen\Data\Cache;
 
 class StubCacheSettingsRepository implements CacheSettingsRepositoryInterface {
 
-    public function getForEntity($className) {
+    public function get($className) {
         return [];
     }
 }

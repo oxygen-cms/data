@@ -3,8 +3,16 @@
 
 namespace Oxygen\Data\Cache;
 
+use Oxygen\Data\Behaviour\PrimaryKeyInterface;
+
 interface CacheSettingsRepositoryInterface {
 
-    public function getForEntity($className);
+    public function get($className);
+
+    public function persistWithinOnFlush();
+
+    public function add($class, PrimaryKeyInterface $entity);
+
+    public function remove($class, PrimaryKeyInterface $entity);
 
 }
