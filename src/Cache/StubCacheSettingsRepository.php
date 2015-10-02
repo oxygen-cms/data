@@ -11,15 +11,15 @@ class StubCacheSettingsRepository implements CacheSettingsRepositoryInterface {
         return [];
     }
 
-    public function persistWithinOnFlush() {
-
-    }
-
     public function add($class, PrimaryKeyInterface $entity) {
 
     }
 
     public function remove($class, PrimaryKeyInterface $entity) {
-        
+
+    }
+
+    public function persist($withinOnFlushEvent = false) {
+
     }
 }

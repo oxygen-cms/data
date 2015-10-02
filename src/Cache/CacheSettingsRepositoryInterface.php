@@ -9,7 +9,7 @@ interface CacheSettingsRepositoryInterface {
 
     public function get($className);
 
-    public function persistWithinOnFlush();
+    public function persist($withinOnFlushEvent = false);
 
     public function add($class, PrimaryKeyInterface $entity);
 
