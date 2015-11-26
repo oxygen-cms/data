@@ -6,7 +6,7 @@ For more information visit the [Core](https://github.com/oxygen-cms/core) reposi
 
 ## Doctrine 2 Wrapper
 
-The `data` package is focused around a the robust Doctrine 2 ORM.
+The `data` package is focused around the robust Doctrine 2 ORM.
 
 ## Behaviours
 
