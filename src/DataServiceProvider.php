@@ -32,7 +32,7 @@ class DataServiceProvider extends ServiceProvider {
             $entities->getEventManager()
                 ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
             $entities->getEventManager()
-                ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events'], $this->app[CacheSettingsRepositoryInterface::class]));
+                ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events'], $this->app[CacheSettingsRepositoryInterface::class], $this->app['log']));
         };
         if($this->app->resolved(EntityManager::class)) {
             $function($this->app[EntityManager::class]);
