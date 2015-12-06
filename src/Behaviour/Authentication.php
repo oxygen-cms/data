@@ -33,9 +33,18 @@ trait Authentication {
     }
 
     /**
+     * Get the column name of the primary key.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName() {
+        return 'id';
+    }
+
+    /**
      * Get the unique identifier for the user.
      *
-     * @return mixed
+     * @return integer
      */
     public function getAuthIdentifier() {
         return $this->getId();
