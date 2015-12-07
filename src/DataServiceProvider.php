@@ -19,7 +19,6 @@ class DataServiceProvider extends ServiceProvider {
      *
      * @var bool
      */
-
     protected $defer = true;
 
     /**
@@ -28,19 +27,14 @@ class DataServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        $function = function($entities) {
-            $entities->getEventManager()
-                ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
-            $entities->getEventManager()
-                ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events'], $this->app[CacheSettingsRepositoryInterface::class], $this->app['log']));
-        };
-        if($this->app->resolved(EntityManager::class)) {
-            $function($this->app[EntityManager::class]);
-        } else {
-            $this->app->resolving(EntityManager::class, $function);
-        }
-
         $this->app->bind(PaginationService::class, LaravelPaginationService::class);
+
+        $this->extendEntityManager(function($entities) {
+            $entities->getEventManager()
+                     ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
+            $entities->getEventManager()
+                     ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events'], $this->app[CacheSettingsRepositoryInterface::class], $this->app['log']));
+        });
     }
 
     /**
