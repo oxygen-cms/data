@@ -12,7 +12,7 @@ use Oxygen\Data\Cache\CacheInvalidationSubscriber;
 use Oxygen\Data\Validation\Laravel\LaravelValidationService;
 use Oxygen\Data\Validation\ValidationSubscriber;
 
-class DataServiceProvider extends ServiceProvider {
+class DataServiceProvider extends BaseServiceProvider {
 
     /**
      * Indicates if loading of the provider is deferred.
