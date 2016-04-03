@@ -5,6 +5,7 @@ namespace Oxygen\Data\Repository\Doctrine;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
 use InvalidArgumentException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
@@ -77,11 +78,11 @@ class Repository implements RepositoryInterface {
                 $select .= ', ';
             }
         }
-        $qb = $this->entities->createQueryBuilder($queryParameters)
+        $qb = $this->entities->createQueryBuilder()
             ->select($select)
             ->from($this->entityName, 'o');
 
-        return $qb->getQuery()->getResult();
+        return $this->getQuery($qb, $queryParameters)->getResult();
     }
 
     /**
@@ -135,15 +136,17 @@ class Repository implements RepositoryInterface {
      * @throws NoResultException if no result was found
      */
     public function find($id, QueryParameters $queryParameters = null) {
+        $q = $this->getQuery(
+            $this->createSelectQuery()
+                 ->andWhere('o.id = :id')
+                 ->setParameter('id', $id),
+            $queryParameters
+        );
+
         try {
-            return $this->getQuery(
-                $this->createSelectQuery()
-                    ->andWhere('o.id = :id')
-                    ->setParameter('id', $id),
-                $queryParameters
-            )->getSingleResult();
+            return $q->getSingleResult();
         } catch(DoctrineNoResultException $e) {
-            throw new NoResultException($e);
+            throw $this->makeNoResultException($e, $q);
         }
     }
 
@@ -220,7 +223,6 @@ class Repository implements RepositoryInterface {
         $qb = $this->entities->createQueryBuilder()
                              ->select($alias)
                              ->from($this->entityName, $alias, $indexBy);
-
         return $qb;
     }
 
@@ -275,6 +277,16 @@ class Repository implements RepositoryInterface {
     }
 
     /**
+     * Creates a NoResultException from a QueryBuilder
+     *
+     * @param \Exception                    $e
+     * @param \Doctrine\ORM\QueryBuilder    $qb
+     * @return \Oxygen\Data\Exception\NoResultException
+     */
+    protected function makeNoResultException(\Exception $e, Query $q) {
+        return new NoResultException($e, $this->replaceQueryParameters($q->getDQL(), $q->getParameters()));
+    }
+    /**
      * Replaces placeholders within a given query with the actual values.
      * Used for debugging.
      *
@@ -282,7 +294,7 @@ class Repository implements RepositoryInterface {
      * @param $parameters
      * @return string
      */
-    protected function replaceQueryParameters($query, $parameters) {
+    private function replaceQueryParameters($query, $parameters) {
         foreach($parameters as $parameter) {
             $value = $parameter->getValue();
             $value = $value instanceof DateTime ? $value->format('Y-m-d H:i:s') : $value;
