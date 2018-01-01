@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\QueryParameters;
+use Oxygen\Data\Behaviour\Searchable;
 use Oxygen\Data\Repository\RepositoryInterface;
 use Oxygen\Data\Pagination\PaginationService;
 
@@ -115,14 +116,28 @@ class Repository implements RepositoryInterface {
      * @param int             $currentPage      current page that overrides the pagination service
      * @return mixed
      */
-    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null) {
+    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null) {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
-        $items = $this->getQuery(
-            $this->createSelectQuery()
-                ->setFirstResult($perPage * ($currentPage - 1))
-                ->setMaxResults($perPage),
-            $queryParameters
-        )->getResult();
+
+        $qb = $this->createSelectQuery()
+            ->setFirstResult($perPage * ($currentPage - 1))
+            ->setMaxResults($perPage);
+
+        $class = new \ReflectionClass($this->entityName);
+        if($class->implementsInterface(Searchable::class) && $searchQuery != null) {
+
+            $fields = call_user_func([$this->entityName, 'getSearchableFields']);
+            $likes = [];
+            foreach($fields as $field) {
+                $likes[] = $qb->expr()->like('o.' . $field, ':searchQuery');
+            }
+
+            $qb = $qb
+                ->where(call_user_func_array([$qb->expr(), 'orX'], $likes))
+                ->setParameter('searchQuery', '%' . $searchQuery . '%');
+        }
+
+        $items = $this->getQuery($qb, $queryParameters)->getResult();
 
         return $this->paginator->make($items, $this->count($queryParameters), $perPage);
     }
@@ -215,7 +230,7 @@ class Repository implements RepositoryInterface {
      * Creates a new QueryBuilder instance that is pre-populated for this entity name.
      *
      * @param string $alias
-     * @param string $indexBy The index for the from.
+     * @param string $indexBy The index for the form.
      *
      * @return QueryBuilder
      */
@@ -311,6 +326,15 @@ class Repository implements RepositoryInterface {
      */
     public function getReference($id) {
         return $this->entities->getReference($this->entityName, $id);
+    }
+
+    /**
+     * Returns the class name of the entity.
+     *
+     * @return string
+     */
+    public function getEntityName() {
+        return $this->entityName;
     }
 
 }
