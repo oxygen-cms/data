@@ -119,10 +119,19 @@ class Repository implements RepositoryInterface {
     public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null) {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
 
-        $qb = $this->createSelectQuery()
-            ->setFirstResult($perPage * ($currentPage - 1))
-            ->setMaxResults($perPage);
+        $qb = $this->addSearchConditions($this->createSelectQuery(), $searchQuery);
 
+        $qb = $qb->setFirstResult($perPage * ($currentPage - 1))
+                 ->setMaxResults($perPage);
+        $items = $this->getQuery($qb, $queryParameters)->getResult();
+
+        $count = $this->addSearchConditions($this->createCountQuery(), $searchQuery);
+        $count = (int) $this->getQuery($count, $queryParameters)->getSingleScalarResult();
+
+        return $this->paginator->make($items, $count, $perPage);
+    }
+
+    public function addSearchConditions($qb, $searchQuery) {
         $class = new \ReflectionClass($this->entityName);
         if($class->implementsInterface(Searchable::class) && $searchQuery != null) {
 
@@ -133,13 +142,10 @@ class Repository implements RepositoryInterface {
             }
 
             $qb = $qb
-                ->where(call_user_func_array([$qb->expr(), 'orX'], $likes))
+                ->andWhere(call_user_func_array([$qb->expr(), 'orX'], $likes))
                 ->setParameter('searchQuery', '%' . $searchQuery . '%');
         }
-
-        $items = $this->getQuery($qb, $queryParameters)->getResult();
-
-        return $this->paginator->make($items, $this->count($queryParameters), $perPage);
+        return $qb;
     }
 
     /**
@@ -219,11 +225,21 @@ class Repository implements RepositoryInterface {
      */
     public function count(QueryParameters $queryParameters = null) {
         return (int) $this->getQuery(
-            $this->entities->createQueryBuilder()
-                ->select('count(o.id)')
-                ->from($this->entityName, 'o'),
+            $this->entities->createCountQuery(),
             $queryParameters
         )->getSingleScalarResult();
+    }
+
+    /**
+     * Creates a new QueryBuilder instance that is pre-populated to count rows.
+     *
+     * @return QueryBuilder
+     */
+    protected function createCountQuery() {
+        return $this->entities
+            ->createQueryBuilder()
+            ->select('count(o.id)')
+            ->from($this->entityName, 'o');
     }
 
     /**
@@ -235,10 +251,10 @@ class Repository implements RepositoryInterface {
      * @return QueryBuilder
      */
     protected function createSelectQuery($alias = 'o', $indexBy = null) {
-        $qb = $this->entities->createQueryBuilder()
-                             ->select($alias)
-                             ->from($this->entityName, $alias, $indexBy);
-        return $qb;
+        return $this->entities
+            ->createQueryBuilder()
+            ->select($alias)
+            ->from($this->entityName, $alias, $indexBy);
     }
 
     /**
