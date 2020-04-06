@@ -8,9 +8,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-use Mitch\LaravelDoctrine\Migrations\DoctrineMigrationRepository;
 use Oxygen\Data\BaseServiceProvider;
 
+/**
+ * Class MigrationsServiceProvider
+ * @package Oxygen\Data\Migrations
+ * @deprecated moving to laravel-doctrine/migrations
+ */
 class MigrationsServiceProvider extends BaseServiceProvider {
 
     /**

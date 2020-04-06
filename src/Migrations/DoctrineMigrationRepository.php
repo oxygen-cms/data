@@ -3,9 +3,13 @@
 namespace Oxygen\Data\Migrations;
 
 use Doctrine\ORM\QueryBuilder;
-use Exception;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
+/**
+ * Class DoctrineMigrationRepository
+ * @package Oxygen\Data\Migrations
+ * @deprecated moving to laravel-doctrine/migrations
+ */
 class DoctrineMigrationRepository implements MigrationRepositoryInterface {
 
     /**
@@ -28,6 +32,21 @@ class DoctrineMigrationRepository implements MigrationRepositoryInterface {
      * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
     protected $metadata;
+
+    /**
+     * @var callable
+     */
+    private $entitiesCallback;
+
+    /**
+     * @var callable
+     */
+    private $schemaCallback;
+
+    /**
+     * @var callable
+     */
+    private $metadataCallback;
 
     /**
      * Create a new database migration repository instance.
@@ -187,6 +206,22 @@ class DoctrineMigrationRepository implements MigrationRepositoryInterface {
             $this->metadata = $callable();
         }
         return $this->metadata;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMigrations($steps)
+    {
+        // TODO: Implement getMigrations() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMigrationBatches()
+    {
+        // TODO: Implement getMigrationBatches() method.
     }
 
 }

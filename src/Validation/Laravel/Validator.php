@@ -3,13 +3,11 @@
 namespace Oxygen\Data\Validation\Laravel;
 
 use Illuminate\Contracts\Hashing\Hasher;
-use Seld\JsonLint\JsonParser;
-use Seld\JsonLint\ParsingException;
-
 use Illuminate\Validation\Validator as BaseValidator;
 use Illuminate\View\Factory;
 use Illuminate\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
+use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Str;
 
 class Validator extends BaseValidator {
 
@@ -40,16 +38,16 @@ class Validator extends BaseValidator {
     /**
      * Create a new Validator instance.
      *
-     * @param \Symfony\Component\Translation\TranslatorInterface  $translator
-     * @param \Illuminate\Contracts\Hashing\Hasher                $hasher
-     * @param  Factory                                            $view
-     * @param \Illuminate\Routing\Router                          $router
-     * @param  array                                              $data
-     * @param  array                                              $rules
-     * @param  array                                              $messages
-     * @param  array                                              $customAttributes
+     * @param \Illuminate\Contracts\Translation\Translator   $translator
+     * @param \Illuminate\Contracts\Hashing\Hasher           $hasher
+     * @param \Illuminate\View\Factory                       $view
+     * @param \Illuminate\Routing\Router                     $router
+     * @param  array                                         $data
+     * @param  array                                         $rules
+     * @param  array                                         $messages
+     * @param  array                                         $customAttributes
      */
-    public function __construct(TranslatorInterface $translator, Hasher $hasher, Factory $view, Router $router, array $data, array $rules, array $messages = [], array $customAttributes = []) {
+    public function __construct(Translator $translator, Hasher $hasher, Factory $view, Router $router, array $data, array $rules, array $messages = [], array $customAttributes = []) {
         parent::__construct($translator, $data, $rules, $messages, $customAttributes);
         $this->hasher = $hasher;
         $this->view = $view;
@@ -172,7 +170,7 @@ class Validator extends BaseValidator {
      * @return bool
      */
     public function validateRouteExists($attribute, $value, $parameters) {
-        $method = 'getBy' . studly_case(isset($parameters[0]) ? $parameters[0] : 'name');
+        $method = 'getBy' . Str::studly(isset($parameters[0]) ? $parameters[0] : 'name');
         $routes = $this->router->getRoutes();
         return $routes->$method($value) !== null;
     }

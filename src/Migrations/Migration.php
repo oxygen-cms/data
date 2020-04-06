@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping AS ORM;
  * @ORM\Entity
  * @ORM\Table(name="migrations")
  * @ORM\HasLifecycleCallbacks
+ * @deprecated moving to laravel-doctrine/migrations
  */
 class Migration {
 

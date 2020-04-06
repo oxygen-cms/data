@@ -36,13 +36,15 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
     /**
      * Count the number of objects in a collection having the given value.
      *
-     * @param  string $collection
-     * @param  string $column
-     * @param  string $value
-     * @param  int $excludeId
-     * @param  string $idColumn
-     * @param  array $extra
+     * @param string $collection
+     * @param string $column
+     * @param string $value
+     * @param int $excludeId
+     * @param string $idColumn
+     * @param array $extra
      * @return int
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getCount($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = []) {
         $idColumn = $idColumn !== null ? $idColumn : 'id';
@@ -66,11 +68,13 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
     /**
      * Count the number of objects in a collection with the given values.
      *
-     * @param  string $collection
-     * @param  string $column
-     * @param  array $values
-     * @param  array $extra
+     * @param string $collection
+     * @param string $column
+     * @param array $values
+     * @param array $extra
      * @return int
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function getMultiCount($collection, $column, array $values, array $extra = []) {
         $qb = $this->createCountQuery($collection)
@@ -93,7 +97,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param  string  $alias
      * @return void
      */
-
     protected function addWhere($qb, $key, $extraValue, $alias = 'o') {
         $reference = $key . '.' . $alias;
         if($extraValue === 'NULL') {
@@ -117,7 +120,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param  mixed  $value
      * @return void
      */
-
     protected function addWhereAdvanced($qb, $key, $operator, $value, $alias) {
         $parameter = 'where' . ucfirst($key);
         $qb->andWhere($alias . '.' . $key .  ' ' . $operator . ' :'  . $parameter)

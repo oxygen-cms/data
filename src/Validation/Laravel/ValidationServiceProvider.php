@@ -82,7 +82,7 @@ class ValidationServiceProvider extends ServiceProvider {
      */
     protected function registerPresenceVerifier() {
         $this->app->singleton('validation.presence', function ($app) {
-            // The use of a closure ensures that the EntityManager is only instanstiated when the validator is actually used.
+            // The use of a closure ensures that the EntityManager is only instantiated when the validator is actually used.
             return new DoctrinePresenceVerifier(function() use($app) {
                 return $app['Doctrine\ORM\EntityManagerInterface'];
             });

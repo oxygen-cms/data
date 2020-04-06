@@ -7,8 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Logging\Log;
-use Illuminate\Log\Writer;
+use Illuminate\Log\Logger;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 
 class CacheInvalidationSubscriber implements EventSubscriber {
@@ -16,22 +15,28 @@ class CacheInvalidationSubscriber implements EventSubscriber {
     /**
      * The config.
      *
-     * @var \Illuminate\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
     protected $events;
 
+    /**
+     * @var CacheSettingsRepositoryInterface
+     */
     protected $cacheSettings;
 
+    /**
+     * @var Logger for writing to a log
+     */
     protected $log;
 
     /**
      * Constructs the CacheInvalidationSubscriber.
      *
-     * @param \Illuminate\Contracts\Events\Dispatcher             $events
-     * @param \Oxygen\Data\Cache\CacheSettingsRepositoryInterface $cacheSettings
-     * @param \Illuminate\Log\Writer                              $log
+     * @param Dispatcher $events
+     * @param CacheSettingsRepositoryInterface $cacheSettings
+     * @param \Illuminate\Log\Logger $log
      */
-    public function __construct(Dispatcher $events, CacheSettingsRepositoryInterface $cacheSettings, Writer $log) {
+    public function __construct(Dispatcher $events, CacheSettingsRepositoryInterface $cacheSettings, Logger $log) {
         $this->events = $events;
         $this->cacheSettings = $cacheSettings;
         $this->log = $log;
