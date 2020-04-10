@@ -18,8 +18,12 @@ class QueryParameters {
      */
     protected $orderBy;
 
-    public function __construct() {
-        $this->scopes = [];
+    /**
+     * QueryParameters constructor.
+     * @param array $scopes
+     */
+    public function __construct($scopes = []) {
+        $this->scopes = $scopes;
         $this->orderBy = null;
     }
 

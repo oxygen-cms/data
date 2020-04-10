@@ -4,6 +4,7 @@ namespace Oxygen\Data\Repository\Doctrine;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use InvalidArgumentException;
@@ -111,10 +112,14 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves all entities, by page.
      *
-     * @param int             $perPage          items per page
-     * @param QueryParameters $queryParameters  an optional array of query scopes
-     * @param int             $currentPage      current page that overrides the pagination service
+     * @param int $perPage items per page
+     * @param QueryParameters $queryParameters an optional array of query scopes
+     * @param int $currentPage current page that overrides the pagination service
+     * @param null $searchQuery
      * @return mixed
+     * @throws DoctrineNoResultException
+     * @throws NonUniqueResultException
+     * @throws \ReflectionException
      */
     public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null) {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
@@ -131,6 +136,12 @@ class Repository implements RepositoryInterface {
         return $this->paginator->make($items, $count, $perPage);
     }
 
+    /**
+     * @param $qb
+     * @param $searchQuery
+     * @return mixed
+     * @throws \ReflectionException
+     */
     public function addSearchConditions($qb, $searchQuery) {
         $class = new \ReflectionClass($this->entityName);
         if($class->implementsInterface(Searchable::class) && $searchQuery != null) {
@@ -151,10 +162,11 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves a single entity.
      *
-     * @param integer         $id
+     * @param integer $id
      * @param QueryParameters $queryParameters an optional array of query scopes
      * @return object
      * @throws NoResultException if no result was found
+     * @throws NonUniqueResultException
      */
     public function find($id, QueryParameters $queryParameters = null) {
         $q = $this->getQuery(
@@ -222,6 +234,8 @@ class Repository implements RepositoryInterface {
      *
      * @param QueryParameters $queryParameters
      * @return integer
+     * @throws DoctrineNoResultException
+     * @throws NonUniqueResultException
      */
     public function count(QueryParameters $queryParameters = null) {
         return (int) $this->getQuery(
@@ -339,6 +353,7 @@ class Repository implements RepositoryInterface {
      *
      * @param int $id
      * @return object
+     * @throws \Doctrine\ORM\ORMException
      */
     public function getReference($id) {
         return $this->entities->getReference($this->entityName, $id);

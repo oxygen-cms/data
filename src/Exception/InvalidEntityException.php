@@ -47,7 +47,7 @@ class InvalidEntityException extends Exception {
     /**
      * Returns the error messages.
      *
-     * @return array
+     * @return MessageBag
      */
     public function getErrors() {
         return $this->errors;

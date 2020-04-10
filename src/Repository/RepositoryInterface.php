@@ -52,10 +52,11 @@ interface RepositoryInterface {
     /**
      * Persists an entity.
      *
-     * @param object $entity
+     * @param object  $entity
+     * @param boolean $flush
      * @return void
      */
-    public function persist($entity);
+    public function persist($entity, $flush = true);
 
     /**
      * Flushes changes to the database.

@@ -34,7 +34,7 @@ trait Versions {
      * @return boolean
      */
     public function isHead() {
-        return $this->headVersion === null;
+        return $this->headVersion === null || $this->headVersion === $this;
     }
 
     /**

@@ -4,33 +4,30 @@ namespace Oxygen\Data\Validation\Laravel;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Validation\PresenceVerifierInterface;
+use InvalidArgumentException;
 
 class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
     /**
-     * The Entity Manager factory.
-     *
-     * @var callable
+     * @var ManagerRegistry
      */
-
-    protected $factory;
+    protected $registry;
 
     /**
-     * The Entity Manager.
+     * The database connection to use.
      *
-     * @var EntityManagerInterface
+     * @var string
      */
-
-    protected $entities;
+    protected $connection = null;
 
     /**
-     * Constructs the PresenceVerifier.
-     *
-     * @param callable $entitiesFactory
+     * @param ManagerRegistry $registry
      */
-    public function __construct(callable $entitiesFactory) {
-        $this->factory = $entitiesFactory;
+    public function __construct(ManagerRegistry $registry)
+    {
+        $this->registry = $registry;
     }
 
     /**
@@ -90,6 +87,8 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
     /**
      * Add a "where" clause to the given query.
+     * Includes options for custom operators, e.g.: !=, >, < which Laravel Doctrine's built-in presence
+     * verifier does not have.
      *
      * @param  object $qb
      * @param  string $key
@@ -135,24 +134,44 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      */
 
     protected function createCountQuery($collection, $alias = 'o') {
-        return $this->getEntityManager()->createQueryBuilder()
+        return $this->getEntityManager($collection)->createQueryBuilder()
             ->select('COUNT(' . $alias . ')')
             ->from($collection, $alias);
     }
 
     /**
-     * Returns the EntityManager, loading it if it hasn't been created yet.
+     * @param string $entity
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return \Doctrine\Persistence\ObjectManager|null
      */
-
-    protected function getEntityManager() {
-        if($this->entities === null) {
-            $callable = $this->factory;
-            $this->entities = $callable();
+    protected function getEntityManager($entity)
+    {
+        if (!is_null($this->connection)) {
+            return $this->registry->getManager($this->connection);
         }
 
-        return $this->entities;
+        if (substr($entity, 0, 1) === '\\') {
+            $entity = substr($entity, 1);
+        }
+
+        $em = $this->registry->getManagerForClass($entity);
+
+        if ($em === null) {
+            throw new InvalidArgumentException(sprintf("No Entity Manager could be found for [%s].", $entity));
+        }
+
+        return $em;
+    }
+
+    /**
+     * Set the connection to be used.
+     *
+     * @param string $connection
+     *
+     * @return void
+     */
+    public function setConnection($connection) {
+        $this->connection = $connection;
     }
 
 }

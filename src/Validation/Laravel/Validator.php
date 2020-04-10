@@ -190,11 +190,11 @@ class Validator extends BaseValidator {
 
     /**
      * Get the extra conditions for a unique / exists rule.
+     * Overrides the implementation in \Illuminate\Validation\Concerns\ValidatesAttributes
      *
      * @param  array  $segments
      * @return array
      */
-
     protected function getExtraConditions(array $segments) {
         $extra = [];
 

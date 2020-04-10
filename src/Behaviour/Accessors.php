@@ -16,6 +16,7 @@ trait Accessors {
      * @return $this
      * @throws BadMethodCallException if the property doesn't exist
      * @throws InvalidArgumentException if a setter argument hasn't been provided
+     * @throws \ReflectionException
      */
     public function __call($method, $args) {
         if(!preg_match('/(?P<accessor>set|get)(?P<property>[A-Z][a-zA-Z0-9]*)/', $method, $match) ||
