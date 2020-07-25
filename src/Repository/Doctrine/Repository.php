@@ -5,8 +5,12 @@ namespace Oxygen\Data\Repository\Doctrine;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use InvalidArgumentException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
@@ -14,6 +18,8 @@ use Oxygen\Data\Repository\QueryParameters;
 use Oxygen\Data\Behaviour\Searchable;
 use Oxygen\Data\Repository\RepositoryInterface;
 use Oxygen\Data\Pagination\PaginationService;
+use ReflectionClass;
+use ReflectionException;
 
 class Repository implements RepositoryInterface {
 
@@ -22,7 +28,6 @@ class Repository implements RepositoryInterface {
      *
      * @var EntityManagerInterface
      */
-
     protected $entities;
 
     /**
@@ -30,7 +35,6 @@ class Repository implements RepositoryInterface {
      *
      * @var PaginationService
      */
-
     protected $paginator;
 
     /**
@@ -55,8 +59,9 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves all entities.
      *
-     * @param QueryParameters  $queryParameters extra query parameters
-     * @return mixed
+     * @param QueryParameters $queryParameters extra query parameters
+     * @return array
+     * @throws ReflectionException
      */
     public function all(QueryParameters $queryParameters = null) {
         return $this->getQuery(
@@ -115,35 +120,26 @@ class Repository implements RepositoryInterface {
      * @param int $perPage items per page
      * @param QueryParameters $queryParameters an optional array of query scopes
      * @param int $currentPage current page that overrides the pagination service
-     * @param null $searchQuery
-     * @return mixed
-     * @throws DoctrineNoResultException
-     * @throws NonUniqueResultException
-     * @throws \ReflectionException
+     * @param string|null $searchQuery
+     * @return LengthAwarePaginator
+     * @throws ReflectionException
      */
     public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null) {
-        $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
-
         $qb = $this->addSearchConditions($this->createSelectQuery(), $searchQuery);
-
-        $qb = $qb->setFirstResult($perPage * ($currentPage - 1))
-                 ->setMaxResults($perPage);
-        $items = $this->getQuery($qb, $queryParameters)->getResult();
-
-        $count = $this->addSearchConditions($this->createCountQuery(), $searchQuery);
-        $count = (int) $this->getQuery($count, $queryParameters)->getSingleScalarResult();
-
-        return $this->paginator->make($items, $count, $perPage);
+        
+        $query = $this->getQuery($qb, $queryParameters);
+        
+        return $this->applyPagination($query, $perPage, $currentPage);
     }
 
     /**
-     * @param $qb
-     * @param $searchQuery
+     * @param QueryBuilder $qb
+     * @param string|null $searchQuery
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public function addSearchConditions($qb, $searchQuery) {
-        $class = new \ReflectionClass($this->entityName);
+    public function addSearchConditions(QueryBuilder $qb, $searchQuery) {
+        $class = new ReflectionClass($this->entityName);
         if($class->implementsInterface(Searchable::class) && $searchQuery != null) {
 
             $fields = call_user_func([$this->entityName, 'getSearchableFields']);
@@ -272,9 +268,9 @@ class Repository implements RepositoryInterface {
     }
 
     /**
-     * @param \Doctrine\ORM\QueryBuilder              $qb
-     * @param \Oxygen\Data\Repository\QueryParameters $queryParameters
-     * @return \Doctrine\ORM\Query
+     * @param QueryBuilder $qb
+     * @param QueryParameters $queryParameters
+     * @return Query
      */
     protected function getQuery(QueryBuilder $qb, QueryParameters $queryParameters = null, $alias = 'o') {
         if($queryParameters != null) {
@@ -311,10 +307,10 @@ class Repository implements RepositoryInterface {
     /**
      * Applies the order by request to the query builder.
      *
-     * @param \Doctrine\ORM\QueryBuilder $queryBuilder
+     * @param QueryBuilder $queryBuilder
      * @param array                      $orderBy
      * @param string                     $alias
-     * @return \Doctrine\ORM\QueryBuilder
+     * @return QueryBuilder
      */
     private function applyOrderByToQueryBuilder(QueryBuilder $queryBuilder, array $orderBy, $alias) {
         $queryBuilder->orderBy($alias . '.' . $orderBy[0], $orderBy[1]);
@@ -324,11 +320,11 @@ class Repository implements RepositoryInterface {
     /**
      * Creates a NoResultException from a QueryBuilder
      *
-     * @param \Exception                    $e
-     * @param \Doctrine\ORM\QueryBuilder    $qb
-     * @return \Oxygen\Data\Exception\NoResultException
+     * @param Exception                    $e
+     * @param QueryBuilder $qb
+     * @return NoResultException
      */
-    protected function makeNoResultException(\Exception $e, Query $q) {
+    protected function makeNoResultException(Exception $e, Query $q) {
         return new NoResultException($e, $this->replaceQueryParameters($q->getDQL(), $q->getParameters()));
     }
     /**
@@ -353,7 +349,7 @@ class Repository implements RepositoryInterface {
      *
      * @param int $id
      * @return object
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function getReference($id) {
         return $this->entities->getReference($this->entityName, $id);
@@ -366,6 +362,29 @@ class Repository implements RepositoryInterface {
      */
     public function getEntityName() {
         return $this->entityName;
+    }
+
+    /**
+     * Applies pagination to a query.
+     *
+     * @param Query $query
+     * @param $perPage
+     * @param null $currentPage
+     * @return LengthAwarePaginator
+     * @throws Exception
+     */
+    protected function applyPagination(Query $query, $perPage, $currentPage = null) {
+        $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
+
+        $paginator = new Paginator($query);
+        $totalItems = count($paginator);
+
+        $paginator->getQuery()->setFirstResult($perPage * ($currentPage - 1))
+            ->setMaxResults($perPage);
+
+        $items = $paginator->getIterator()->getArrayCopy();
+
+        return $this->paginator->make($items, $totalItems, $perPage);
     }
 
 }

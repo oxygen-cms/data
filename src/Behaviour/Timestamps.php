@@ -20,19 +20,37 @@ trait Timestamps {
     private $updatedAt;
 
     /**
+     * @var boolean
+     */
+    private $overrideUpdatedAt = false;
+
+    /**
+     * Specifies that the `updated_at` field should not automatically be set upon perist/update.
+     *
+     * Note: this is not remembered in the database at all, so only lasts whilst this PHP object is alive.
+     */
+    public function overrideUpdatedAt() {
+        $this->overrideUpdatedAt = true;
+    }
+
+    /**
      * @ORM\PrePersist
      */
     public function prePersist() {
         $now = new DateTime();
         $this->createdAt = $now;
-        $this->updatedAt = $now;
+        if(!$this->overrideUpdatedAt) {
+            $this->updatedAt = $now;
+        }
     }
 
     /**
      * @ORM\PreUpdate
      */
     public function preUpdate() {
-        $this->updatedAt = new DateTime();
+        if(!$this->overrideUpdatedAt) {
+            $this->updatedAt = new DateTime();
+        }
     }
 
     /**

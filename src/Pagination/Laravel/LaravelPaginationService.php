@@ -41,7 +41,7 @@ class LaravelPaginationService implements PaginationService {
      * @param array $items
      * @param int   $totalItems
      * @param int   $perPage
-     * @return object
+     * @return LengthAwarePaginator
      */
     public function make(array $items, $totalItems, $perPage) {
         return new LengthAwarePaginator($items, $totalItems, $perPage);

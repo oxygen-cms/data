@@ -2,6 +2,8 @@
 
 namespace Oxygen\Data\Pagination;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 interface PaginationService {
 
     /**
@@ -17,7 +19,7 @@ interface PaginationService {
      * @param array $items
      * @param int   $totalItems
      * @param int   $perPage
-     * @return object
+     * @return LengthAwarePaginator
      */
     public function make(array $items, $totalItems, $perPage);
 

@@ -2,6 +2,7 @@
 
 namespace Oxygen\Data\Repository;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Oxygen\Data\Exception\NoResultException;
 
 interface RepositoryInterface {
@@ -28,7 +29,7 @@ interface RepositoryInterface {
      *
      * @param int          $perPage
      * @param QueryParameters  $queryParameters extra query parameters
-     * @return mixed
+     * @return LengthAwarePaginator
      */
     public function paginate($perPage = 25, QueryParameters $queryParameters = null);
 
