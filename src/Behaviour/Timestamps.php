@@ -29,7 +29,7 @@ trait Timestamps {
      *
      * Note: this is not remembered in the database at all, so only lasts whilst this PHP object is alive.
      */
-    public function overrideUpdatedAt() {
+    public function preserveUpdatedAt() {
         $this->overrideUpdatedAt = true;
     }
 
