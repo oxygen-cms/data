@@ -118,9 +118,9 @@ class Repository implements RepositoryInterface {
      * Retrieves all entities, by page.
      *
      * @param int $perPage items per page
-     * @param QueryParameters $queryParameters an optional array of query scopes
-     * @param int $currentPage current page that overrides the pagination service
-     * @param string|null $searchQuery
+     * @param QueryParameters|null $queryParameters an optional array of query scopes
+     * @param null $currentPage current page that overrides the pagination service
+     * @param array|string|null $searchQuery
      * @return LengthAwarePaginator
      * @throws ReflectionException
      */

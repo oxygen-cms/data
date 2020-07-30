@@ -10,7 +10,7 @@ interface RepositoryInterface {
     /**
      * Retrieves all entities.
      *
-     * @param QueryParameters  $queryParameters extra query parameters
+     * @param QueryParameters|null $queryParameters extra query parameters
      * @return mixed
      */
     public function all(QueryParameters $queryParameters = null);
@@ -19,7 +19,7 @@ interface RepositoryInterface {
      * Retrieves certain columns of entities.
      *
      * @param array $fields
-     * @param QueryParameters  $queryParameters extra query parameters
+     * @param QueryParameters|null $queryParameters extra query parameters
      * @return mixed
      */
     public function columns(array $fields, QueryParameters $queryParameters = null);
@@ -27,17 +27,19 @@ interface RepositoryInterface {
     /**
      * Retrieves all entities, by page.
      *
-     * @param int          $perPage
-     * @param QueryParameters  $queryParameters extra query parameters
+     * @param int $perPage items per page
+     * @param QueryParameters|null $queryParameters an optional array of query scopes
+     * @param null $currentPage current page that overrides the pagination service
+     * @param array|string|null $searchQuery
      * @return LengthAwarePaginator
      */
-    public function paginate($perPage = 25, QueryParameters $queryParameters = null);
+    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null);
 
     /**
      * Retrieves a single entity.
      *
-     * @param integer       $id
-     * @param QueryParameters  $queryParameters extra query parameters
+     * @param integer $id
+     * @param QueryParameters|null $queryParameters extra query parameters
      * @return object
      * @throws NoResultException if no result was found
      */
