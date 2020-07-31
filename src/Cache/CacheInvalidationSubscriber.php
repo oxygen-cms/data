@@ -96,6 +96,9 @@ class CacheInvalidationSubscriber implements EventSubscriber {
      * @param object                      $entity
      */
     public function invalidate(EntityManager $em, $entity) {
+        if($entity === null) {
+            return;
+        }
         $this->log->info('Invalidating entity of class ' . get_class($entity) . ' with ID ' . $entity->getId());
         $this->events->dispatch('oxygen.entity.cache.invalidated', [$entity]);
 
