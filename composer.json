@@ -16,7 +16,8 @@
     "require": {
         "php": ">=7.2.0",
         "illuminate/support": "~6.0",
-        "laravel-doctrine/orm": "~1.5"
+        "laravel-doctrine/orm": "~1.5",
+        "austinsmorris/doctrine-dbal-datetimeutc": "~1.0"
     },
     "autoload": {
         "psr-4": {
