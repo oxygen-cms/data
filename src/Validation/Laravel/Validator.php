@@ -65,7 +65,9 @@ class Validator extends BaseValidator {
      * @return bool
      */
     public function validateSlug($attribute, $value, $parameters) {
-        return preg_match('#^[a-z0-9/\-]+$#', $value);
+        // the slug could be equal to '/', or it should not start with a '/'
+        // e.g.: write 'concerts' instead of '/concerts'
+        return $value === '/' || preg_match('#^[a-z0-9\-][a-z0-9/\-]+$#', $value);
     }
 
     /**
