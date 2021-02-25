@@ -16,6 +16,7 @@
     "require": {
         "php": ">=7.2.0",
         "illuminate/support": "~6.0",
+        "illuminate/log": "~6.0",
         "laravel-doctrine/orm": "~1.5",
         "austinsmorris/doctrine-dbal-datetimeutc": "~1.0"
     },
@@ -43,6 +44,10 @@
         ]
     },
     "require-dev": {
-        "phpstan/phpstan": "^0.12.18"
+        "phpstan/phpstan": "^0.12.18",
+        "phpspec/phpspec": "^6.1"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 1"
     }
 }
