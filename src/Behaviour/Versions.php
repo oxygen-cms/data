@@ -3,6 +3,8 @@
 namespace Oxygen\Data\Behaviour;
 
 use Doctrine\Common\Collections\Collection;
+use Oxygen\Data\Validation\Rules\Unique;
+use Oxygen\Data\Validation\ValidationService;
 
 trait Versions {
 
@@ -72,15 +74,15 @@ trait Versions {
      * @param $field
      * @return string
      */
-    protected function getUniqueValidationRule($field) {
-        $rule = 'unique:' . get_class($this) . ',' . $field . ',' . $this->getHeadId() . ',id';
+    protected function getUniqueValidationRule($field): Unique {
+        $unique = Unique::amongst(get_class($this))->field($field)->ignoreWithId($this->getHeadId());
 
         // ignore other versions of this entity
         if($this->getHeadId()) {
-            $rule .= ',headVersion,!=,' . $this->getHeadId();
+            $unique->addWhere('headVersion', ValidationService::NOT_EQUALS, $this->getHeadId());
         }
 
-        return $rule;
+        return $unique;
     }
 
 }

@@ -8,13 +8,14 @@ use Illuminate\View\Factory;
 use Illuminate\Routing\Router;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Str;
+use Oxygen\Data\Validation\ValidationService;
 
 class Validator extends BaseValidator {
 
     /**
      * The Hasher implementation.
      *
-     * @var \Illuminate\Contracts\Hashing\Hasher
+     * @var Hasher
      */
 
     protected $hasher;
@@ -22,7 +23,7 @@ class Validator extends BaseValidator {
     /**
      * The View factory.
      *
-     * @var \Illuminate\View\Factory
+     * @var Factory
      */
 
     protected $view;
@@ -30,7 +31,7 @@ class Validator extends BaseValidator {
     /**
      * The Router instance.
      *
-     * @var \Illuminate\Routing\Router
+     * @var Router
      */
 
     protected $router;
@@ -38,10 +39,10 @@ class Validator extends BaseValidator {
     /**
      * Create a new Validator instance.
      *
-     * @param \Illuminate\Contracts\Translation\Translator   $translator
-     * @param \Illuminate\Contracts\Hashing\Hasher           $hasher
-     * @param \Illuminate\View\Factory                       $view
-     * @param \Illuminate\Routing\Router                     $router
+     * @param Translator $translator
+     * @param Hasher $hasher
+     * @param Factory $view
+     * @param Router $router
      * @param  array                                         $data
      * @param  array                                         $rules
      * @param  array                                         $messages
@@ -197,23 +198,19 @@ class Validator extends BaseValidator {
      * @param  array  $segments
      * @return array
      */
-    protected function getExtraConditions(array $segments) {
+    protected function getExtraConditions(array $segments): array {
         $extra = [];
 
         $count = count($segments);
 
-        $operators = [
-            '=', '<', '>', '<=', '>=', '<>', '!='
-        ];
-
         // if any of the operators are in the segments
-        if(!!array_intersect($operators, $segments)) {
+        if(!!array_intersect(DoctrinePresenceVerifier::OPERATORS, $segments)) {
             for ($i = 0; $i < $count; $i = $i + 3) {
                 $extra[$segments[$i]] = [$segments[$i + 1], $segments[$i + 2]];
             }
         } else {
             for ($i = 0; $i < $count; $i = $i + 2) {
-                $extra[$segments[$i]] = $segments[$i + 1];
+                $extra[$segments[$i]] = [ValidationService::EQUALS, $segments[$i + 1]];
             }
         }
 

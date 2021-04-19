@@ -29,11 +29,10 @@ interface RepositoryInterface {
      *
      * @param int $perPage items per page
      * @param QueryParameters|null $queryParameters an optional array of query scopes
-     * @param null $currentPage current page that overrides the pagination service
-     * @param array|string|null $searchQuery
+     * @param int|null $currentPage current page that overrides the pagination service
      * @return LengthAwarePaginator
      */
-    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null);
+    public function paginate(int $perPage = 25, ?QueryParameters $queryParameters = null, ?int $currentPage = null): LengthAwarePaginator;
 
     /**
      * Retrieves a single entity.
@@ -43,7 +42,7 @@ interface RepositoryInterface {
      * @return object
      * @throws NoResultException if no result was found
      */
-    public function find($id, QueryParameters $queryParameters = null);
+    public function find(int $id, QueryParameters $queryParameters = null);
 
     /**
      * Creates a new entity
@@ -96,5 +95,12 @@ interface RepositoryInterface {
      * @return object
      */
     public function getReference($id);
+
+    /**
+     * Returns the class name of the entity.
+     *
+     * @return string
+     */
+    public function getEntityName(): string;
 
 }

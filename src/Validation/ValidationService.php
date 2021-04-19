@@ -4,6 +4,11 @@ namespace Oxygen\Data\Validation;
 
 interface ValidationService {
 
+    public const NULL = 'NULL';
+    public const NOT_NULL = 'NOT_NULL';
+    public const EQUALS = '=';
+    public const NOT_EQUALS = '!=';
+
     /**
      * Sets the data to be validated.
      *

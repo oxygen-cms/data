@@ -9,9 +9,9 @@ class QueryParameters {
     const DESCENDING = 'DESC';
 
     /**
-     * @var array|string $scopes an optional array of query scopes
+     * @var array|string $clauses an optional array of query scopes
      */
-    protected $scopes;
+    protected $clauses;
 
     /**
      * @var array how to order the results
@@ -23,7 +23,7 @@ class QueryParameters {
      * @param array $scopes
      */
     public function __construct($scopes = []) {
-        $this->scopes = $scopes;
+        $this->clauses = $scopes;
         $this->orderBy = null;
     }
 
@@ -31,27 +31,27 @@ class QueryParameters {
      * Makes a new instance of self
      * @return QueryParameters
      */
-    public static function make() {
+    public static function make(): QueryParameters {
         return new QueryParameters();
     }
 
     /**
      * Changes how the results are ordered.
      * @param string $field
+     * @param string $direction
      * @return self
      */
-    public function orderBy($field, $direction = self::ASCENDING) {
+    public function orderBy(string $field, $direction = self::ASCENDING) {
         $this->orderBy = [$field, $direction];
         return $this;
     }
 
     /**
-     * Adds a scope to the scopes array.
-     * @param string $scope
-     * @return self
+     * @param QueryClauseInterface $clause
+     * @return $this
      */
-    public function addScope($scope) {
-        $this->scopes[] = $scope;
+    public function addClause(QueryClauseInterface $clause): QueryParameters {
+        $this->clauses[] = $clause;
         return $this;
     }
 
@@ -60,7 +60,7 @@ class QueryParameters {
      * @return self
      */
     public function excludeTrashed() {
-        return $this->addScope('excludeTrashed');
+        return $this->addClause(new ExcludeTrashedScope());
     }
 
     /**
@@ -68,7 +68,7 @@ class QueryParameters {
      * @return self
      */
     public function excludeVersions() {
-        return $this->addScope('excludeVersions');
+        return $this->addClause(new ExcludeVersionsScope());
     }
 
     /**
@@ -76,7 +76,7 @@ class QueryParameters {
      * @return self
      */
     public function onlyTrashed() {
-        return $this->addScope('onlyTrashed');
+        return $this->addClause(new OnlyTrashedScope());
     }
 
     /**
@@ -84,8 +84,8 @@ class QueryParameters {
      *
      * @return array
      */
-    public function getScopes() {
-        return $this->scopes;
+    public function getClauses() {
+        return $this->clauses;
     }
 
     /**

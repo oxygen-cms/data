@@ -30,7 +30,6 @@ trait Fillable {
      *
      * @return array
      */
-
     protected function getFillableFields() {
         return [];
     }
