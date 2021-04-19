@@ -3,18 +3,20 @@
 namespace Oxygen\Data\Repository\Doctrine;
 
 use Carbon\Carbon;
-use Doctrine\ORM\QueryBuilder;
+use Oxygen\Data\Behaviour\HasUpdatedAt;
+use Oxygen\Data\Behaviour\Versionable;
+use phpDocumentor\Reflection\DocBlock\Tags\Version;
 
 trait Versions {
 
     /**
      * Makes a new version of the given entity.
      *
-     * @param  object  $entity the entity
-     * @param  boolean $flush
-     * @return object  The new version
+     * @param  Versionable  $entity the entity
+     * @param  boolean      $flush
+     * @return object       The new version
      */
-    public function makeNewVersion($entity, $flush = true) {
+    public function makeNewVersion(Versionable $entity, $flush = true) {
         $new = clone $entity;
         $new->setHead($entity->getHead());
         $this->entities->persist($new);
@@ -27,33 +29,43 @@ trait Versions {
     /**
      * Makes an entity the head version.
      *
-     * @param object $entity
+     * @param Versionable $entity
      * @return boolean
      */
-    public function makeHeadVersion($entity) {
-        if($entity->isHead()) {
-            return false;
-        }
+    public function makeHeadVersion(Versionable $entity): bool {
+        $fillable = $entity->getFillableFields();
 
         $oldHead = $entity->getHead();
+        if($oldHead === $entity) {
+            return true;
+        }
 
-        // update references on all old versions
-        $this->entities->createQueryBuilder()
-            ->update($this->entityName, 'o')
-            ->set('o.headVersion', ':newHead')
-            ->where('o.headVersion = :oldHead')
-            ->setParameter('newHead', $entity)
-            ->setParameter('oldHead', $oldHead)
-            ->getQuery()
-            ->execute();
+        // preserve updated_at values.
+        if($entity instanceof HasUpdatedAt) {
+            $oldUpdatedAt = $oldHead->getUpdatedAt();
+            $entityUpdatedAt = $entity->getUpdatedAt();
+        }
 
-        // make the old head now just a sub-version
-        $oldHead->setHead($entity);
-        $this->persist($oldHead, false);
+        $reflect = new \ReflectionClass($entity);
+        foreach($reflect->getProperties() as $prop) {
+            if(in_array($prop->getName(), $fillable)) {
+                $prop->setAccessible(true);
+                // switch around the properties
+                $oldValue = $prop->getValue($entity);
+                $prop->setValue($entity, $prop->getValue($oldHead));
+                $prop->setValue($oldHead, $oldValue);
+            }
+        }
 
-        // make this entity the head
-        $entity->setHead(null);
-        $this->persist($entity, false);
+        if($entity instanceof HasUpdatedAt) {
+            $oldHead->setUpdatedAt($entityUpdatedAt);
+            $entity->setUpdatedAt($oldUpdatedAt);
+            $entity->preserveUpdatedAt();
+            $oldHead->preserveUpdatedAt();
+        }
+
+        $this->persist($entity, false, Versionable::NO_NEW_VERSION);
+        $this->persist($oldHead, false, Versionable::NO_NEW_VERSION);
 
         $this->entities->flush();
         return true;
@@ -62,11 +74,10 @@ trait Versions {
     /**
      * Determines if the entity needs a new version created.
      *
-     * @param $entity
+     * @param Versionable $entity
      * @return boolean
      */
-
-    protected function needsNewVersion($entity) {
+    protected function needsNewVersion(Versionable $entity): bool {
         if(!$entity->isHead()) {
             return false;
         }
@@ -79,29 +90,30 @@ trait Versions {
         $newTimestamp = Carbon::now();
         $diff = $newTimestamp->diffInHours($oldTimestamp);
 
-        if($diff >= 24) {
-            return true;
-        }
+        return $diff >= 24;
     }
 
     /**
      * Persists an entity. Creating a new version of it if needed.
      *
      * @param object $entity
+     * @param boolean $flush
      * @param string $version
      * @return boolean true if a new version was created
      */
-    public function persist($entity, $version = 'guess') {
+    public function persist($entity, $flush = true, $version = Versionable::GUESS_IF_NEW_VERSION_REQUIRED): bool {
         $this->entities->persist($entity);
 
-        if($version === 'new' || ($version === 'guess' && $this->needsNewVersion($entity))) {
+        if($version === Versionable::ALWAYS_MAKE_NEW_VERSION || ($version === Versionable::GUESS_IF_NEW_VERSION_REQUIRED && $this->needsNewVersion($entity))) {
             $this->makeNewVersion($entity, false);
             $return = true;
         } else {
             $return = false;
         }
 
-        $this->entities->flush();
+        if($flush) {
+            $this->entities->flush();
+        }
 
         return $return;
     }
@@ -109,10 +121,10 @@ trait Versions {
     /**
      * Clears old versions of an entity.
      *
-     * @param object $entity
-     * @return object
+     * @param Versionable $entity
+     * @return Versionable
      */
-    public function clearVersions($entity) {
+    public function clearVersions(Versionable $entity): Versionable {
         $entity = $entity->getHead();
         $versions = $entity->getVersions();
 
@@ -123,28 +135,6 @@ trait Versions {
         $this->persist($entity, 'overwrite');
 
         return $entity;
-    }
-
-    /**
-     * Filters out non-head versions.
-     *
-     * @param QueryBuilder $query
-     * @return QueryBuilder
-     */
-
-    protected function scopeExcludeVersions(QueryBuilder $query) {
-        return $query->andWhere('o.headVersion is NULL');
-    }
-
-    /**
-     * Filters everything except non-head versions.
-     *
-     * @param QueryBuilder $query
-     * @return QueryBuilder
-     */
-
-    protected function scopeOnlyVersions(QueryBuilder $query) {
-        return $query->andWhere('o.headVersion is NOT NULL');
     }
 
 }

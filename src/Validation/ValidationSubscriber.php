@@ -40,7 +40,7 @@ class ValidationSubscriber implements EventSubscriber {
      *
      * @param LifecycleEventArgs $args
      * @throws InvalidEntityException if the entity is invalid
-     * @return boolean
+     * @return void
      */
 
     protected function validate(LifecycleEventArgs $args) {
@@ -73,11 +73,11 @@ class ValidationSubscriber implements EventSubscriber {
     }
 
     public function prePersist(LifecycleEventArgs $args) {
-        return $this->validate($args);
+        $this->validate($args);
     }
 
     public function preUpdate(LifecycleEventArgs $args) {
-        return $this->validate($args);
+        $this->validate($args);
     }
 
 }

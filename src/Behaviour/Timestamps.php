@@ -78,7 +78,7 @@ trait Timestamps {
      *
      * @return Carbon
      */
-    public function getCreatedAt() {
+    public function getCreatedAt(): Carbon {
         return Carbon::instance($this->createdAt);
     }
 
@@ -87,7 +87,7 @@ trait Timestamps {
      *
      * @return Carbon
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt(): Carbon {
         return Carbon::instance($this->updatedAt);
     }
 

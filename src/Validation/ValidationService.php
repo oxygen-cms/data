@@ -2,7 +2,14 @@
 
 namespace Oxygen\Data\Validation;
 
+use Illuminate\Support\MessageBag;
+
 interface ValidationService {
+
+    public const NULL = 'NULL';
+    public const NOT_NULL = 'NOT_NULL';
+    public const EQUALS = '=';
+    public const NOT_EQUALS = '!=';
 
     /**
      * Sets the data to be validated.
@@ -23,7 +30,7 @@ interface ValidationService {
     /**
      * Returns the validation errors
      *
-     * @return array
+     * @return MessageBag
      */
     public function errors();
 

@@ -7,8 +7,13 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Validation\PresenceVerifierInterface;
 use InvalidArgumentException;
+use Oxygen\Data\Validation\ValidationService;
 
 class DoctrinePresenceVerifier implements PresenceVerifierInterface {
+
+    public const OPERATORS = [
+        ValidationService::EQUALS, '<', '>', '<=', '>=', ValidationService::NOT_EQUALS
+    ];
 
     /**
      * @var ManagerRegistry
@@ -90,39 +95,37 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * Includes options for custom operators, e.g.: !=, >, < which Laravel Doctrine's built-in presence
      * verifier does not have.
      *
-     * @param  object $qb
+     * @param  QueryBuilder $qb
      * @param  string $key
-     * @param  string $extraValue
+     * @param  string|array $extraValue
      * @param  string  $alias
      * @return void
      */
-    protected function addWhere($qb, $key, $extraValue, $alias = 'o') {
-        $reference = $key . '.' . $alias;
-        if($extraValue === 'NULL') {
-            $qb->andWhere($reference . ' is NULL');
-        } elseif($extraValue === 'NOT_NULL') {
-            $qb->andWhere($reference . ' is NOT NULL');
-        } elseif(is_array($extraValue)) {
-            list($operator, $value) = $extraValue;
-            $this->addWhereAdvanced($qb, $key, $operator, $value, $alias);
-        } else {
-            $this->addWhereAdvanced($qb, $key, '=', $extraValue, $alias);
-        }
+    protected function addWhere(QueryBuilder $qb, string $key, $extraValue, $alias = 'o') {
+        list($operator, $value) = $extraValue;
+        $this->addWhereAdvanced($qb, $key, $operator, $value, $alias);
     }
 
     /**
      * Add a "where" clause to the given query.
      *
-     * @param  object $qb
-     * @param  string $key
-     * @param  string $operator
-     * @param  mixed  $value
+     * @param QueryBuilder $qb
+     * @param string $key
+     * @param string $operator
+     * @param mixed $value
+     * @param string $alias
      * @return void
      */
-    protected function addWhereAdvanced($qb, $key, $operator, $value, $alias) {
-        $parameter = 'where' . ucfirst($key);
-        $qb->andWhere($alias . '.' . $key .  ' ' . $operator . ' :'  . $parameter)
-           ->setParameter($parameter, $value);
+    protected function addWhereAdvanced(QueryBuilder $qb, string $key, string $operator, $value, $alias) {
+        if($value === ValidationService::NULL) {
+            $qb->andWhere($alias . '.' . $key . ' is NULL');
+        } else if($value === ValidationService::NOT_NULL) {
+            $qb->andWhere($alias . '.' . $key . ' is NOT NULL');
+        } else {
+            $parameter = 'where' . ucfirst($key);
+            $qb->andWhere($alias . '.' . $key .  ' ' . $operator . ' :'  . $parameter)
+                ->setParameter($parameter, $value);
+        }
     }
 
     /**
@@ -132,7 +135,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param string $alias
      * @return QueryBuilder
      */
-
     protected function createCountQuery($collection, $alias = 'o') {
         return $this->getEntityManager($collection)->createQueryBuilder()
             ->select('COUNT(' . $alias . ')')
@@ -141,8 +143,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
     /**
      * @param string $entity
-     *
-     * @return \Doctrine\Persistence\ObjectManager|null
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     protected function getEntityManager($entity)
     {

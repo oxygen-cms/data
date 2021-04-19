@@ -15,11 +15,8 @@ use InvalidArgumentException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\QueryParameters;
-use Oxygen\Data\Behaviour\Searchable;
 use Oxygen\Data\Repository\RepositoryInterface;
 use Oxygen\Data\Pagination\PaginationService;
-use ReflectionClass;
-use ReflectionException;
 
 class Repository implements RepositoryInterface {
 
@@ -59,9 +56,8 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves all entities.
      *
-     * @param QueryParameters $queryParameters extra query parameters
+     * @param QueryParameters|null $queryParameters extra query parameters
      * @return array
-     * @throws ReflectionException
      */
     public function all(QueryParameters $queryParameters = null) {
         return $this->getQuery(
@@ -73,8 +69,8 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves certain columns of entities.
      *
-     * @param array           $fields
-     * @param QueryParameters $queryParameters an optional array of query scopes
+     * @param array $fields
+     * @param QueryParameters|null $queryParameters an optional array of query scopes
      * @return mixed
      */
     public function columns(array $fields, QueryParameters $queryParameters = null) {
@@ -98,9 +94,9 @@ class Repository implements RepositoryInterface {
      *  3 => Foo
      *  4 => Yoyo
      *
-     * @param $key
-     * @param $value
-     * @param QueryParameters $queryParameters
+     * @param string $key
+     * @param string $value
+     * @param QueryParameters|null $queryParameters
      * @return array
      */
     public function listKeysAndValues($key, $value, QueryParameters $queryParameters = null) {
@@ -119,52 +115,27 @@ class Repository implements RepositoryInterface {
      *
      * @param int $perPage items per page
      * @param QueryParameters|null $queryParameters an optional array of query scopes
-     * @param null $currentPage current page that overrides the pagination service
-     * @param array|string|null $searchQuery
+     * @param int|null $currentPage current page that overrides the pagination service
      * @return LengthAwarePaginator
-     * @throws ReflectionException
+     * @throws Exception
      */
-    public function paginate($perPage = 25, QueryParameters $queryParameters = null, $currentPage = null, $searchQuery = null) {
-        $qb = $this->addSearchConditions($this->createSelectQuery(), $searchQuery);
-        
+    public function paginate(int $perPage = 25, ?QueryParameters $queryParameters = null, ?int $currentPage = null): LengthAwarePaginator {
+        $qb = $this->createSelectQuery();
         $query = $this->getQuery($qb, $queryParameters);
-        
+
         return $this->applyPagination($query, $perPage, $currentPage);
-    }
-
-    /**
-     * @param QueryBuilder $qb
-     * @param string|null $searchQuery
-     * @return mixed
-     * @throws ReflectionException
-     */
-    public function addSearchConditions(QueryBuilder $qb, $searchQuery) {
-        $class = new ReflectionClass($this->entityName);
-        if($class->implementsInterface(Searchable::class) && $searchQuery != null) {
-
-            $fields = call_user_func([$this->entityName, 'getSearchableFields']);
-            $likes = [];
-            foreach($fields as $field) {
-                $likes[] = $qb->expr()->like('o.' . $field, ':searchQuery');
-            }
-
-            $qb = $qb
-                ->andWhere(call_user_func_array([$qb->expr(), 'orX'], $likes))
-                ->setParameter('searchQuery', '%' . $searchQuery . '%');
-        }
-        return $qb;
     }
 
     /**
      * Retrieves a single entity.
      *
      * @param integer $id
-     * @param QueryParameters $queryParameters an optional array of query scopes
+     * @param QueryParameters|null $queryParameters an optional array of query scopes
      * @return object
      * @throws NoResultException if no result was found
      * @throws NonUniqueResultException
      */
-    public function find($id, QueryParameters $queryParameters = null) {
+    public function find(int $id, QueryParameters $queryParameters = null) {
         $q = $this->getQuery(
             $this->createSelectQuery()
                  ->andWhere('o.id = :id')
@@ -197,7 +168,7 @@ class Repository implements RepositoryInterface {
      */
     public function persist($entity, $flush = true) {
         $this->entities->persist($entity);
-        if($flush) {
+        if($flush === true) {
             $this->entities->flush();
         }
     }
@@ -235,7 +206,7 @@ class Repository implements RepositoryInterface {
      */
     public function count(QueryParameters $queryParameters = null) {
         return (int) $this->getQuery(
-            $this->entities->createCountQuery(),
+            $this->createCountQuery(),
             $queryParameters
         )->getSingleScalarResult();
     }
@@ -269,12 +240,13 @@ class Repository implements RepositoryInterface {
 
     /**
      * @param QueryBuilder $qb
-     * @param QueryParameters $queryParameters
+     * @param QueryParameters|null $queryParameters
+     * @param string $alias
      * @return Query
      */
-    protected function getQuery(QueryBuilder $qb, QueryParameters $queryParameters = null, $alias = 'o') {
+    protected function getQuery(QueryBuilder $qb, QueryParameters $queryParameters = null, $alias = 'o'): Query {
         if($queryParameters != null) {
-            $this->applyScopesToQueryBuilder($qb, $queryParameters->getScopes());
+            $this->applyClausesToQueryBuilder($qb, $queryParameters->getClauses(), $alias);
             if($queryParameters->getOrderBy() != null) {
                 $this->applyOrderByToQueryBuilder($qb, $queryParameters->getOrderBy(), $alias);
             }
@@ -287,19 +259,17 @@ class Repository implements RepositoryInterface {
      * Creates a new QueryBuilder instance that is pre-populated for this entity name.
      * Applies scopes to the query builder as well.
      *
-     * @param array  $scopes
      * @param QueryBuilder $qb
-     * @throws InvalidArgumentException if the scope was not found
+     * @param array $scopes
+     * @param string $alias
      * @return QueryBuilder
      */
-    protected function applyScopesToQueryBuilder(QueryBuilder $qb, array $scopes) {
+    protected function applyClausesToQueryBuilder(QueryBuilder $qb, array $scopes, string $alias): QueryBuilder {
         foreach((array) $scopes as $scope) {
-            $method = 'scope' . ucfirst($scope);
-            if(method_exists($this, $method)) {
-                $qb = $this->{$method}($qb);
-            } else {
-                throw new InvalidArgumentException('Scope \'' . $scope . '\' not found');
+            if(is_string($scope)) {
+                throw new InvalidArgumentException($scope . ' should be an instance of QueryClauseInterface');
             }
+            $qb = $scope->apply($qb, $alias);
         }
         return $qb;
     }
@@ -308,11 +278,11 @@ class Repository implements RepositoryInterface {
      * Applies the order by request to the query builder.
      *
      * @param QueryBuilder $queryBuilder
-     * @param array                      $orderBy
-     * @param string                     $alias
+     * @param array $orderBy
+     * @param string $alias
      * @return QueryBuilder
      */
-    private function applyOrderByToQueryBuilder(QueryBuilder $queryBuilder, array $orderBy, $alias) {
+    private function applyOrderByToQueryBuilder(QueryBuilder $queryBuilder, array $orderBy, string $alias): QueryBuilder {
         $queryBuilder->orderBy($alias . '.' . $orderBy[0], $orderBy[1]);
         return $queryBuilder;
     }
@@ -320,22 +290,22 @@ class Repository implements RepositoryInterface {
     /**
      * Creates a NoResultException from a QueryBuilder
      *
-     * @param Exception                    $e
-     * @param QueryBuilder $qb
+     * @param Exception $e
+     * @param Query $q
      * @return NoResultException
      */
-    protected function makeNoResultException(Exception $e, Query $q) {
+    protected function makeNoResultException(Exception $e, Query $q): NoResultException {
         return new NoResultException($e, $this->replaceQueryParameters($q->getDQL(), $q->getParameters()));
     }
     /**
      * Replaces placeholders within a given query with the actual values.
      * Used for debugging.
      *
-     * @param $query
-     * @param $parameters
+     * @param string $query
+     * @param array $parameters
      * @return string
      */
-    private function replaceQueryParameters($query, $parameters) {
+    protected function replaceQueryParameters($query, $parameters): string {
         foreach($parameters as $parameter) {
             $value = $parameter->getValue();
             $value = $value instanceof DateTime ? $value->format('Y-m-d H:i:s') : $value;
@@ -360,7 +330,7 @@ class Repository implements RepositoryInterface {
      *
      * @return string
      */
-    public function getEntityName() {
+    public function getEntityName(): string {
         return $this->entityName;
     }
 
@@ -368,7 +338,7 @@ class Repository implements RepositoryInterface {
      * Applies pagination to a query.
      *
      * @param Query $query
-     * @param $perPage
+     * @param int $perPage
      * @param null $currentPage
      * @return LengthAwarePaginator
      * @throws Exception
@@ -376,11 +346,11 @@ class Repository implements RepositoryInterface {
     protected function applyPagination(Query $query, $perPage, $currentPage = null) {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
 
+        $query->setFirstResult($perPage * ($currentPage - 1))
+            ->setMaxResults($perPage);
+
         $paginator = new Paginator($query);
         $totalItems = count($paginator);
-
-        $paginator->getQuery()->setFirstResult($perPage * ($currentPage - 1))
-            ->setMaxResults($perPage);
 
         $items = $paginator->getIterator()->getArrayCopy();
 
