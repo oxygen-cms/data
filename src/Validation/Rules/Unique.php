@@ -29,6 +29,7 @@ class Unique {
 
     public function __construct(string $entityName) {
         $this->entityName = $entityName;
+        $this->wheres = [];
     }
 
     /**

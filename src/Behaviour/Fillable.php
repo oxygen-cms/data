@@ -7,7 +7,7 @@ use Oxygen\Data\Exception\MassAssignmentException;
 trait Fillable {
 
     /**
-     * Fills the entity from and array.
+     * Fills the entity from an array.
      *
      * @param array $input
      * @return void
@@ -30,7 +30,7 @@ trait Fillable {
      *
      * @return array
      */
-    protected function getFillableFields() {
+    public function getFillableFields(): array {
         return [];
     }
 

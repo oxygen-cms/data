@@ -13,7 +13,7 @@ trait Versions {
      *
      * @return Collection
      */
-    public function getVersions() {
+    public function getVersions(): Collection {
         if($this->isHead()) {
             return $this->versions;
         } else {
@@ -26,7 +26,7 @@ trait Versions {
      *
      * @return boolean
      */
-    public function hasVersions() {
+    public function hasVersions(): bool {
         return !$this->getVersions()->isEmpty();
     }
 
@@ -35,7 +35,7 @@ trait Versions {
      *
      * @return boolean
      */
-    public function isHead() {
+    public function isHead(): bool {
         return $this->headVersion === null || $this->headVersion === $this;
     }
 
@@ -44,7 +44,7 @@ trait Versions {
      *
      * @return integer
      */
-    public function getHeadId() {
+    public function getHeadId(): ?int {
         return $this->isHead() ? $this->getId() : $this->headVersion->getId();
     }
 
@@ -63,7 +63,7 @@ trait Versions {
      * @param object $head
      * @return $this
      */
-    public function setHead($head) {
+    public function setHead($head): Versionable {
         $this->headVersion = $head;
         return $this;
     }
@@ -72,7 +72,7 @@ trait Versions {
      * Returns a validation rule that validates this entity for uniqueness, ignoring other versions.
      *
      * @param $field
-     * @return string
+     * @return Unique
      */
     protected function getUniqueValidationRule($field): Unique {
         $unique = Unique::amongst(get_class($this))->field($field)->ignoreWithId($this->getHeadId());
