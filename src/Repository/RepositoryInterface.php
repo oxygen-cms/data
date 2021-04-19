@@ -81,8 +81,8 @@ interface RepositoryInterface {
      *  3 => Foo
      *  4 => Yoyo
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      * @param QueryParameters  $queryParameters extra query parameters
      * @return array
      */

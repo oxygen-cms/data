@@ -58,7 +58,7 @@ class Unique {
     /**
      * @param string $field
      * @param string $operator
-     * @param $value
+     * @param mixed $value
      * @return $this
      */
     public function addWhere(string $field, string $operator, $value): Unique {

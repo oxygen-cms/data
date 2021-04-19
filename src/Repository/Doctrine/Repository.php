@@ -94,8 +94,8 @@ class Repository implements RepositoryInterface {
      *  3 => Foo
      *  4 => Yoyo
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      * @param QueryParameters|null $queryParameters
      * @return array
      */
@@ -206,7 +206,7 @@ class Repository implements RepositoryInterface {
      */
     public function count(QueryParameters $queryParameters = null) {
         return (int) $this->getQuery(
-            $this->entities->createCountQuery(),
+            $this->createCountQuery(),
             $queryParameters
         )->getSingleScalarResult();
     }
@@ -301,8 +301,8 @@ class Repository implements RepositoryInterface {
      * Replaces placeholders within a given query with the actual values.
      * Used for debugging.
      *
-     * @param $query
-     * @param $parameters
+     * @param string $query
+     * @param array $parameters
      * @return string
      */
     protected function replaceQueryParameters($query, $parameters): string {
@@ -338,7 +338,7 @@ class Repository implements RepositoryInterface {
      * Applies pagination to a query.
      *
      * @param Query $query
-     * @param $perPage
+     * @param int $perPage
      * @param null $currentPage
      * @return LengthAwarePaginator
      * @throws Exception

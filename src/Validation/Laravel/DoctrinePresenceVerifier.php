@@ -113,7 +113,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param string $key
      * @param string $operator
      * @param mixed $value
-     * @param $alias
+     * @param string $alias
      * @return void
      */
     protected function addWhereAdvanced(QueryBuilder $qb, string $key, string $operator, $value, $alias) {
@@ -143,8 +143,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
     /**
      * @param string $entity
-     *
-     * @return \Doctrine\Persistence\ObjectManager|null
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     protected function getEntityManager($entity)
     {

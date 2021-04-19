@@ -14,7 +14,7 @@ class QueryParameters {
     protected $clauses;
 
     /**
-     * @var array how to order the results
+     * @var array|null how to order the results
      */
     protected $orderBy;
 

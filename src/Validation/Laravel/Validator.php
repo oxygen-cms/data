@@ -107,7 +107,7 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-    public function validateAlphaDot($attribue, $value, $parameters) {
+    public function validateAlphaDot($attribute, $value, $parameters) {
         return preg_match('/^[\pL\pM\pN\.]+$/u', $value);
     }
 
@@ -119,7 +119,7 @@ class Validator extends BaseValidator {
      * @param  array   $parameters
      * @return bool
      */
-    public function validateName($attribue, $value, $parameters) {
+    public function validateName($attribute, $value, $parameters) {
         return preg_match('/^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð& ,.\'-]+$/u', $value);
     }
 

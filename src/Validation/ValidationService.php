@@ -2,6 +2,8 @@
 
 namespace Oxygen\Data\Validation;
 
+use Illuminate\Support\MessageBag;
+
 interface ValidationService {
 
     public const NULL = 'NULL';
@@ -28,7 +30,7 @@ interface ValidationService {
     /**
      * Returns the validation errors
      *
-     * @return array
+     * @return MessageBag
      */
     public function errors();
 

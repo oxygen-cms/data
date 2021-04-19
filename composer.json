@@ -48,6 +48,6 @@
         "phpspec/phpspec": "^6.1"
     },
     "scripts": {
-        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 1"
+        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 2"
     }
 }
