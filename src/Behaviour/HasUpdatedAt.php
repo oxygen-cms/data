@@ -25,7 +25,7 @@ interface HasUpdatedAt {
     public function getUpdatedAt(): Carbon;
 
     /**
-     * Specifies that the `updated_at` field should not automatically be set upon perist/update.
+     * Specifies that the `updated_at` field should not automatically be set upon persist/update.
      *
      * Note: this is not remembered in the database at all, so only lasts whilst this PHP object is alive.
      */
