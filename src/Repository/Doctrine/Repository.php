@@ -343,7 +343,7 @@ class Repository implements RepositoryInterface {
      * @return LengthAwarePaginator
      * @throws Exception
      */
-    protected function applyPagination(Query $query, $perPage, $currentPage = null) {
+    protected function applyPagination(Query $query, $perPage, $currentPage = null): LengthAwarePaginator {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
 
         $query->setFirstResult($perPage * ($currentPage - 1))

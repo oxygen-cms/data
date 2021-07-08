@@ -3,7 +3,10 @@
 namespace Oxygen\Data\Exception;
 
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
+use Oxygen\Core\Http\Notification;
 
 class InvalidEntityException extends Exception {
 
@@ -51,6 +54,19 @@ class InvalidEntityException extends Exception {
      */
     public function getErrors() {
         return $this->errors;
+    }
+
+    /**
+     * Render the exception into an HTTP response.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function render(Request $request) {
+        return response()->json([
+            'content' => $this->getErrors()->first(),
+            'status' => Notification::FAILED
+        ]);
     }
 
 }

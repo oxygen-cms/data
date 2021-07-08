@@ -3,6 +3,7 @@
 namespace Oxygen\Data\Repository;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Oxygen\Data\Exception\InvalidEntityException;
 use Oxygen\Data\Exception\NoResultException;
 
 interface RepositoryInterface {
@@ -57,6 +58,7 @@ interface RepositoryInterface {
      * @param object  $entity
      * @param boolean $flush
      * @return void
+     * @throws InvalidEntityException if the entity does not pass validation.
      */
     public function persist($entity, $flush = true);
 

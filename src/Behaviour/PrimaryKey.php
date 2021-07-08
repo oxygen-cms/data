@@ -30,5 +30,14 @@ trait PrimaryKey {
         $this->id = null;
     }
 
+    /**
+     * We should be able to look up this entity by its ID
+     *
+     * @return string
+     */
+    public static function getRouteKeyName(): string {
+        return 'id';
+    }
+
 }
 
