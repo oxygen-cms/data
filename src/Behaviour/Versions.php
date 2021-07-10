@@ -85,5 +85,17 @@ trait Versions {
         return $unique;
     }
 
+    /**
+     * Adds a new version to the list of versions...
+     *
+     * @return Versionable
+     */
+    public function makeNewVersion(): Versionable {
+        $version = clone $this;
+        $version->setHead($this->getHead());
+        $this->versions->add($version);
+        return $version;
+    }
+
 }
 

@@ -17,13 +17,9 @@ trait Versions {
      * @return object       The new version
      */
     public function makeNewVersion(Versionable $entity, $flush = true) {
-        $new = clone $entity;
-        $new->setHead($entity->getHead());
-        $this->entities->persist($new);
-        if($flush) {
-            $this->entities->flush();
-        }
-        return $new;
+        $version = $entity->makeNewVersion();
+        $this->persist($version, $flush, Versionable::NO_NEW_VERSION);
+        return $version;
     }
 
     /**
@@ -102,20 +98,26 @@ trait Versions {
      * @return boolean true if a new version was created
      */
     public function persist($entity, $flush = true, $version = Versionable::GUESS_IF_NEW_VERSION_REQUIRED): bool {
-        $this->entities->persist($entity);
-
-        if($version === Versionable::ALWAYS_MAKE_NEW_VERSION || ($version === Versionable::GUESS_IF_NEW_VERSION_REQUIRED && $this->needsNewVersion($entity))) {
+        if($version === Versionable::ALWAYS_MAKE_NEW_VERSION ||
+            ($version === Versionable::GUESS_IF_NEW_VERSION_REQUIRED && $this->needsNewVersion($entity))) {
             $this->makeNewVersion($entity, false);
             $return = true;
         } else {
             $return = false;
         }
 
+        $this->entities->persist($entity);
+        $this->onEntityPersisted($entity);
+
         if($flush) {
             $this->entities->flush();
         }
 
         return $return;
+    }
+
+    protected function onEntityPersisted($entity) {
+
     }
 
     /**
@@ -132,7 +134,7 @@ trait Versions {
             $this->delete($version, false);
         }
         $versions->clear();
-        $this->persist($entity, 'overwrite');
+        $this->persist($entity, true, Versionable::NO_NEW_VERSION);
 
         return $entity;
     }
