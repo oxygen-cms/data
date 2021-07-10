@@ -2,6 +2,8 @@
 
 namespace Oxygen\Data\Repository\Doctrine;
 
+use Oxygen\Data\Behaviour\Versionable;
+
 trait Publishes {
 
     /**
@@ -9,43 +11,22 @@ trait Publishes {
      *
      * @param  object  $entity the entity
      * @param  boolean $flush
-     * @return object  The new version
+     * @return void
      */
     public function makeDraftOfVersion($entity, $flush = true) {
-        $new = clone $entity;
-        $new->setHead($entity->getHead());
-        $new->publish();
-        $this->persist($new, false);
+        $version = $entity->makeNewVersion();
+        $entity->unpublish();
+        $this->persist($version, false, Versionable::NO_NEW_VERSION);
+        $this->persist($entity, false, Versionable::NO_NEW_VERSION);
         if($flush) {
             $this->entities->flush();
         }
     }
 
-    /**
-     * Persists an entity. Creating a new version of it if needed.
-     * Ensures that only one version is published at a time.
-     *
-     * @param object $entity
-     * @param string $version
-     * @return boolean true if a new version was created
-     */
-    public function persist($entity, $version = 'guess') {
-        $this->entities->persist($entity);
-        
-        if($version === 'new' || ($version === 'guess' && $this->needsNewVersion($entity))) {
-            $this->makeNewVersion($entity, false);
-            $return = true;
-        } else {
-            $return = false;
-        }
-
+    protected function onEntityPersisted($entity) {
         if($entity->isPublished()) {
             $this->unpublishOthers($entity);
         }
-
-        $this->entities->flush();
-
-        return $return;
     }
 
     /**
@@ -54,20 +35,23 @@ trait Publishes {
      * @param object $entity
      * @return void
      */
-
     protected function unpublishOthers($entity) {
+        // TODO: watch out - this isn't a perfect solution, since sometimes the Doctrine collection classes can
+        //       get out of sync with the database if you do a bunch of work all at once without flushing / reloading
+        //       the application
+        // perhaps better to enforce this uniqueness constraint at the database level?
         if(!$entity->isHead()) {
             $head = $entity->getHead();
             if($head->isPublished()) {
                 $head->unpublish();
-                $this->persist($head, false);
+                $this->persist($head, false, Versionable::NO_NEW_VERSION);
             }
         }
 
         foreach($entity->getVersions() as $version) {
             if($version !== $entity && $version->isPublished()) {
                 $version->unpublish();
-                $this->persist($version, false);
+                $this->persist($version, false, Versionable::NO_NEW_VERSION);
             }
         }
     }

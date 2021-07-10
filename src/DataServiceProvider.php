@@ -3,13 +3,8 @@
 namespace Oxygen\Data;
 
 use Doctrine\ORM\EntityManager;
-use Illuminate\Log\Logger;
-use Illuminate\Support\ServiceProvider;
-use Oxygen\Data\Cache\CacheSettingsRepositoryInterface;
-use Oxygen\Data\Cache\StubCacheSettingsRepository;
 use Oxygen\Data\Pagination\Laravel\LaravelPaginationService;
 use Oxygen\Data\Pagination\PaginationService;
-use Oxygen\Data\Cache\CacheInvalidationSubscriber;
 use Oxygen\Data\Validation\Laravel\LaravelValidationService;
 use Oxygen\Data\Validation\ValidationSubscriber;
 
@@ -33,8 +28,6 @@ class DataServiceProvider extends BaseServiceProvider {
         $this->extendEntityManager(function(EntityManager $entities) {
             $entities->getEventManager()
                      ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
-            $entities->getEventManager()
-                     ->addEventSubscriber(new CacheInvalidationSubscriber($this->app['events'], $this->app[CacheSettingsRepositoryInterface::class], $this->app[Logger::class]));
         });
     }
 

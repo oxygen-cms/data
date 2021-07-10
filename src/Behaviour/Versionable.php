@@ -25,6 +25,13 @@ interface Versionable {
     public function hasVersions(): bool;
 
     /**
+     * Adds a new version to the list of versions...
+     *
+     * @return Versionable
+     */
+    public function makeNewVersion(): Versionable;
+
+    /**
      * Whether the current version is the head version.
      *
      * @return boolean

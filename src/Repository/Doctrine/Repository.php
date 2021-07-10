@@ -199,7 +199,7 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves the number of records in the table.
      *
-     * @param QueryParameters $queryParameters
+     * @param QueryParameters|null $queryParameters
      * @return integer
      * @throws DoctrineNoResultException
      * @throws NonUniqueResultException
@@ -343,7 +343,7 @@ class Repository implements RepositoryInterface {
      * @return LengthAwarePaginator
      * @throws Exception
      */
-    protected function applyPagination(Query $query, $perPage, $currentPage = null) {
+    protected function applyPagination(Query $query, int $perPage, $currentPage = null): LengthAwarePaginator {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
 
         $query->setFirstResult($perPage * ($currentPage - 1))
