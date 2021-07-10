@@ -10,11 +10,11 @@
     "authors": [
         {
             "name": "Chris Chamberlain",
-            "email": "c.chamberlain@iinet.net.au"
+            "email": "chris@chamberlain.id.au"
         }
     ],
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.4.0",
         "illuminate/support": "~6.0",
         "illuminate/log": "~6.0",
         "laravel-doctrine/orm": "~1.5",
