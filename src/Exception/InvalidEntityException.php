@@ -65,7 +65,7 @@ class InvalidEntityException extends Exception {
     public function render(Request $request) {
         return response()->json([
             'content' => $this->getErrors()->first(),
-            'status' => Notification::FAILED
+            'status' => 'failed'
         ]);
     }
 
