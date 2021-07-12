@@ -75,11 +75,13 @@ trait Versions {
      * @return Unique
      */
     protected function getUniqueValidationRule($field): Unique {
-        $unique = Unique::amongst(get_class($this))->field($field)->ignoreWithId($this->getHeadId());
-
-        // ignore other versions of this entity
-        if($this->getHeadId()) {
-            $unique->addWhere('headVersion', ValidationService::NOT_EQUALS, $this->getHeadId());
+        $unique = Unique::amongst(get_class($this))->field($field)->ignoreWithId($this->getId());
+        // we only care about uniqueness if we are saving the head-version
+        if($this->isHead()) {
+            $unique->addWhere('headVersion', ValidationService::EQUALS, ValidationService::NULL);
+        } else {
+            // turn this into a dummy validation rule
+            $unique->addWhere('id', ValidationService::EQUALS, $this->getId());
         }
 
         return $unique;
