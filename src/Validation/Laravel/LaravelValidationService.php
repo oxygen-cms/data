@@ -39,7 +39,6 @@ class LaravelValidationService implements ValidationService {
      *
      * @param array $data
      * @param array $rules
-     * @return mixed
      */
     public function with(array $data, array $rules) {
         $this->validator = $this->factory->make($data, $rules);

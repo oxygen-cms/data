@@ -15,21 +15,23 @@ class Unique {
      */
     private $entityName;
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
     /**
-     * @var string
+     * @var string|null
      */
     private $idField;
     /**
      * @var array
      */
-    private $wheres;
+    private array $wheres;
 
     public function __construct(string $entityName) {
         $this->entityName = $entityName;
         $this->wheres = [];
+        $this->id = null;
+        $this->idField = null;
     }
 
     /**
@@ -69,12 +71,15 @@ class Unique {
         return $this;
     }
 
-    public static function amongst(string $entityName) {
+    public static function amongst(string $entityName): Unique {
         return new Unique($entityName);
     }
 
     public function __toString() {
-        $base = "unique:$this->entityName,$this->uniqueFieldName,$this->id,$this->idField";
+        $base = "unique:$this->entityName,$this->uniqueFieldName";
+        if($this->id != null) {
+            $base .= ",$this->id,$this->idField";
+        }
         foreach($this->wheres as $where) {
             $field = $where['field'];
             $operator = $where['operator'];

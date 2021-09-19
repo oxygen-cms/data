@@ -14,8 +14,7 @@ class ValidationSubscriber implements EventSubscriber {
      *
      * @var ValidationService
      */
-
-    protected $validator;
+    protected ValidationService $validator;
 
     /**
      * Constructs the ValidationSubscriber
@@ -42,7 +41,6 @@ class ValidationSubscriber implements EventSubscriber {
      * @throws InvalidEntityException if the entity is invalid
      * @return void
      */
-
     protected function validate(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
         $metadata = $args->getEntityManager()->getClassMetadata(get_class($entity));
@@ -67,15 +65,21 @@ class ValidationSubscriber implements EventSubscriber {
      * @param object $entity
      * @return bool
      */
-
-    protected function shouldBeValidated($entity) {
+    protected function shouldBeValidated($entity): bool {
         return $entity instanceof Validatable;
     }
 
+    /**
+     * @throws InvalidEntityException
+     */
     public function prePersist(LifecycleEventArgs $args) {
         $this->validate($args);
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     * @throws InvalidEntityException
+     */
     public function preUpdate(LifecycleEventArgs $args) {
         $this->validate($args);
     }
