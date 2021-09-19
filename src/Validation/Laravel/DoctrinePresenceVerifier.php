@@ -3,6 +3,8 @@
 namespace Oxygen\Data\Validation\Laravel;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Validation\PresenceVerifierInterface;
@@ -30,8 +32,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
     /**
      * @param ManagerRegistry $registry
      */
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(ManagerRegistry $registry) {
         $this->registry = $registry;
     }
 
@@ -45,10 +46,10 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param string $idColumn
      * @param array $extra
      * @return int
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
-    public function getCount($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = []) {
+    public function getCount($collection, $column, $value, $excludeId = null, $idColumn = null, array $extra = []): int {
         $idColumn = $idColumn !== null ? $idColumn : 'id';
 
         $qb = $this->createCountQuery($collection)
@@ -75,8 +76,8 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param array $values
      * @param array $extra
      * @return int
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getMultiCount($collection, $column, array $values, array $extra = []) {
         $qb = $this->createCountQuery($collection)
@@ -143,10 +144,9 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
     /**
      * @param string $entity
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
-    protected function getEntityManager($entity)
-    {
+    protected function getEntityManager($entity) {
         if (!is_null($this->connection)) {
             return $this->registry->getManager($this->connection);
         }
@@ -168,7 +168,6 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * Set the connection to be used.
      *
      * @param string $connection
-     *
      * @return void
      */
     public function setConnection($connection) {
