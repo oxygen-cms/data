@@ -17,4 +17,14 @@ class NoResultException extends RuntimeException {
         parent::__construct('No result was found for query (Query: "' . $sql . '")', 0, $previous);
     }
 
+    /**
+     * Render the exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request) {
+        return response()->noContent(404);
+    }
+
 }
