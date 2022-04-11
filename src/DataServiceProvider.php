@@ -3,6 +3,7 @@
 namespace Oxygen\Data;
 
 use Doctrine\ORM\EntityManager;
+use Oxygen\Data\Behaviour\BlameableSubscriber;
 use Oxygen\Data\Pagination\Laravel\LaravelPaginationService;
 use Oxygen\Data\Pagination\PaginationService;
 use Oxygen\Data\Validation\Laravel\LaravelValidationService;
@@ -28,6 +29,8 @@ class DataServiceProvider extends BaseServiceProvider {
         $this->extendEntityManager(function(EntityManager $entities) {
             $entities->getEventManager()
                      ->addEventSubscriber(new ValidationSubscriber(new LaravelValidationService($this->app['validator'])));
+            $entities->getEventManager()
+                     ->addEventSubscriber(new BlameableSubscriber($this->app['auth']));
         });
     }
 
