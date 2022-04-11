@@ -2,28 +2,28 @@
 
 namespace Oxygen\Data\Behaviour;
 
-use Oxygen\Auth\Entity\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 interface Blameable {
 
     /**
-     * @return User|null
+     * @return Authenticatable|null
      */
-    public function getCreatedBy(): ?User;
+    public function getCreatedBy(): ?Authenticatable;
 
     /**
-     * @return User|null
+     * @return Authenticatable|null
      */
-    public function getUpdatedBy(): ?User;
+    public function getUpdatedBy(): ?Authenticatable;
 
     /**
-     * @param User $createdBy
+     * @param Authenticatable $createdBy
      */
-    public function setCreatedBy(User $createdBy);
+    public function setCreatedBy(Authenticatable $createdBy);
 
     /**
-     * @param User $updatedBy
+     * @param Authenticatable $updatedBy
      */
-    public function setUpdatedBy(User $updatedBy);
+    public function setUpdatedBy(Authenticatable $updatedBy);
 
 }
