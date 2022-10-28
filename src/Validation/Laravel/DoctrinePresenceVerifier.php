@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Validation\PresenceVerifierInterface;
 use InvalidArgumentException;
 use Oxygen\Data\Validation\ValidationService;
+use Webmozart\Assert\Assert;
 
 class DoctrinePresenceVerifier implements PresenceVerifierInterface {
 
@@ -25,9 +26,9 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
     /**
      * The database connection to use.
      *
-     * @var string
+     * @var string|null
      */
-    protected $connection = null;
+    protected ?string $connection = null;
 
     /**
      * @param ManagerRegistry $registry
@@ -148,7 +149,9 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      */
     protected function getEntityManager($entity) {
         if (!is_null($this->connection)) {
-            return $this->registry->getManager($this->connection);
+            $em = $this->registry->getManager($this->connection);
+            Assert::isInstanceOf($em, EntityManagerInterface::class);
+            return $em;
         }
 
         if (substr($entity, 0, 1) === '\\') {
@@ -161,6 +164,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
             throw new InvalidArgumentException(sprintf("No Entity Manager could be found for [%s].", $entity));
         }
 
+        Assert::isInstanceOf($em, EntityManagerInterface::class);
         return $em;
     }
 

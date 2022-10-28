@@ -17,7 +17,8 @@
         "php": ">=7.4.0",
         "laravel/framework": "~6.0",
         "laravel-doctrine/orm": "~1.5",
-        "austinsmorris/doctrine-dbal-datetimeutc": "~1.0"
+        "austinsmorris/doctrine-dbal-datetimeutc": "~1.0",
+        "webmozart/assert": "^1.10"
     },
     "autoload": {
         "psr-4": {
@@ -34,13 +35,18 @@
     "config": {
         "platform": {
             "php": "7.4.0"
+        },
+        "allow-plugins": {
+            "phpstan/extension-installer": true
         }
     },
     "require-dev": {
-        "phpstan/phpstan": "^0.12.18",
-        "phpspec/phpspec": "^6.1"
+        "phpstan/phpstan": "^1.6.4",
+        "phpspec/phpspec": "^6.1",
+        "phpstan/phpstan-webmozart-assert": "^1.2",
+        "phpstan/extension-installer": "^1.2"
     },
     "scripts": {
-        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 2"
+        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 5"
     }
 }

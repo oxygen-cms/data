@@ -129,13 +129,13 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves a single entity.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @param QueryParameters|null $queryParameters an optional array of query scopes
      * @return object
      * @throws NoResultException if no result was found
      * @throws NonUniqueResultException
      */
-    public function find(int $id, QueryParameters $queryParameters = null) {
+    public function find($id, QueryParameters $queryParameters = null) {
         $q = $this->getQuery(
             $this->createSelectQuery()
                  ->andWhere('o.id = :id')
@@ -295,7 +295,7 @@ class Repository implements RepositoryInterface {
      * @return NoResultException
      */
     protected function makeNoResultException(Exception $e, Query $q): NoResultException {
-        return new NoResultException($e, $this->replaceQueryParameters($q->getDQL(), $q->getParameters()));
+        return new NoResultException($e, $this->replaceQueryParameters($q->getDQL(), $q->getParameters()->getValues()));
     }
     /**
      * Replaces placeholders within a given query with the actual values.
@@ -317,7 +317,7 @@ class Repository implements RepositoryInterface {
     /**
      * Returns a reference to a specified item.
      *
-     * @param int $id
+     * @param integer|string $id
      * @return object
      * @throws ORMException
      */
@@ -339,11 +339,11 @@ class Repository implements RepositoryInterface {
      *
      * @param Query $query
      * @param int $perPage
-     * @param null $currentPage
+     * @param int|null $currentPage
      * @return LengthAwarePaginator
      * @throws Exception
      */
-    protected function applyPagination(Query $query, int $perPage, $currentPage = null): LengthAwarePaginator {
+    protected function applyPagination(Query $query, int $perPage, ?int $currentPage = null): LengthAwarePaginator {
         $currentPage = $currentPage === null ? $this->paginator->getCurrentPage() : $currentPage;
 
         $query->setFirstResult($perPage * ($currentPage - 1))
