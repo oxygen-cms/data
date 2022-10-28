@@ -129,13 +129,13 @@ class Repository implements RepositoryInterface {
     /**
      * Retrieves a single entity.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @param QueryParameters|null $queryParameters an optional array of query scopes
      * @return object
      * @throws NoResultException if no result was found
      * @throws NonUniqueResultException
      */
-    public function find(int $id, QueryParameters $queryParameters = null) {
+    public function find($id, QueryParameters $queryParameters = null) {
         $q = $this->getQuery(
             $this->createSelectQuery()
                  ->andWhere('o.id = :id')
@@ -317,7 +317,7 @@ class Repository implements RepositoryInterface {
     /**
      * Returns a reference to a specified item.
      *
-     * @param int $id
+     * @param integer|string $id
      * @return object
      * @throws ORMException
      */

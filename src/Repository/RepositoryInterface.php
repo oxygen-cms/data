@@ -38,12 +38,12 @@ interface RepositoryInterface {
     /**
      * Retrieves a single entity.
      *
-     * @param integer $id
+     * @param integer|string $id
      * @param QueryParameters|null $queryParameters extra query parameters
      * @return object
      * @throws NoResultException if no result was found
      */
-    public function find(int $id, QueryParameters $queryParameters = null);
+    public function find($id, QueryParameters $queryParameters = null);
 
     /**
      * Creates a new entity
@@ -93,7 +93,7 @@ interface RepositoryInterface {
     /**
      * Returns a reference to a specified item.
      *
-     * @param int $id
+     * @param integer|string $id
      * @return object
      */
     public function getReference($id);
