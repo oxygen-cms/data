@@ -9,15 +9,15 @@ trait Timestamps {
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @var \DateTime
+     * @var \DateTime|null
      */
-    private $createdAt;
+    private ?DateTime $createdAt;
 
     /**
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     * @var \DateTime
+     * @var \DateTime|null
      */
-    private $updatedAt;
+    private ?DateTime $updatedAt;
 
     /**
      * @var boolean
