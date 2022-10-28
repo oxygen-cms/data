@@ -11,7 +11,7 @@ trait SoftDeletes {
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      * @var DateTime|null
      */
-    protected ?DateTime $deletedAt;
+    protected ?DateTime $deletedAt = null;
 
     /**
      * Returns when the entity was deleted.
