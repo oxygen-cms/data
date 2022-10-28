@@ -11,13 +11,13 @@ trait Timestamps {
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      * @var \DateTime|null
      */
-    private ?DateTime $createdAt;
+    private ?DateTime $createdAt = null;
 
     /**
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      * @var \DateTime|null
      */
-    private ?DateTime $updatedAt;
+    private ?DateTime $updatedAt = null;
 
     /**
      * @var boolean
