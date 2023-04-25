@@ -352,7 +352,7 @@ class Repository implements RepositoryInterface {
         $paginator = new Paginator($query);
         $totalItems = count($paginator);
 
-        $items = $paginator->getIterator()->getArrayCopy();
+        $items = iterator_to_array($paginator->getIterator());
 
         return $this->paginator->make($items, $totalItems, $perPage);
     }
