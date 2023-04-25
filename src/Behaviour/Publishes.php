@@ -10,6 +10,23 @@ trait Publishes {
     protected $stage;
 
     /**
+     * @return int
+     */
+    public function getStage(): int
+    {
+        return $this->stage;
+    }
+
+    /**
+     * @param int $stage
+     * @return void
+     */
+    public function setStage(int $stage)
+    {
+        $this->stage = $stage;
+    }
+
+    /**
      * Determines if the page is published.
      *
      * @return boolean
