@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Oxygen\Data\Behaviour\HasUpdatedAt;
 use Oxygen\Data\Behaviour\Versionable;
 use phpDocumentor\Reflection\DocBlock\Tags\Version;
+use Webmozart\Assert\Assert;
 
 trait Versions {
 
@@ -98,6 +99,7 @@ trait Versions {
      * @return boolean true if a new version was created
      */
     public function persist($entity, $flush = true, $version = Versionable::GUESS_IF_NEW_VERSION_REQUIRED): bool {
+        Assert::isInstanceOf($entity, Versionable::class);
         if($version === Versionable::ALWAYS_MAKE_NEW_VERSION ||
             ($version === Versionable::GUESS_IF_NEW_VERSION_REQUIRED && $this->needsNewVersion($entity))) {
             $this->makeNewVersion($entity, false);
