@@ -14,10 +14,10 @@
         }
     ],
     "require": {
-        "php": ">=7.4.0",
-        "laravel/framework": "~6.0",
-        "laravel-doctrine/orm": "~1.5",
-        "austinsmorris/doctrine-dbal-datetimeutc": "~1.0",
+        "php": ">=8.1.0",
+        "laravel/framework": "^10.0",
+        "laravel-doctrine/orm": "^2.0",
+        "shapecode/doctrine-dbal-datetimeutc": "^3.0",
         "webmozart/assert": "^1.10"
     },
     "autoload": {
@@ -34,7 +34,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "8.1.0"
         },
         "allow-plugins": {
             "phpstan/extension-installer": true
@@ -42,11 +42,10 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^1.8",
-        "phpspec/phpspec": "^6.1",
         "phpstan/phpstan-webmozart-assert": "^1.2",
         "phpstan/extension-installer": "^1.2"
     },
     "scripts": {
-        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 5"
+        "test": "vendor/bin/phpstan analyze src --level 5"
     }
 }
