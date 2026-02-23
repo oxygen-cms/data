@@ -19,6 +19,9 @@ trait SoftDeletes {
      * @return Carbon
      */
     public function getDeletedAt() {
+        if($this->deletedAt === null) {
+            return null;
+        }
         return new Carbon($this->deletedAt->format('Y-m-d H:i:s'), $this->deletedAt->getTimezone());
     }
 
