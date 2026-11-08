@@ -85,7 +85,8 @@ trait Versions {
 
         $oldTimestamp = $entity->getVersions()->first()->getUpdatedAt();
         $newTimestamp = Carbon::now();
-        $diff = $newTimestamp->diffInHours($oldTimestamp);
+        // `from -> to` ordering gives a positive result on both Carbon 2 (always absolute) and Carbon 3 (signed)
+        $diff = $oldTimestamp->diffInHours($newTimestamp);
 
         return $diff >= 24;
     }

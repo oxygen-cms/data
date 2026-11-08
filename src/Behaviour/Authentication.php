@@ -60,6 +60,15 @@ trait Authentication {
     }
 
     /**
+     * Get the name of the password attribute for the user (required by Laravel 11's Authenticatable contract).
+     *
+     * @return string
+     */
+    public function getAuthPasswordName() {
+        return 'password';
+    }
+
+    /**
      * Retrieves the id field name
      *
      * @return string
