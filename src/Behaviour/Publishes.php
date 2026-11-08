@@ -2,11 +2,10 @@
 
 namespace Oxygen\Data\Behaviour;
 
+use Doctrine\ORM\Mapping as ORM;
 trait Publishes {
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     protected $stage;
 
     /**

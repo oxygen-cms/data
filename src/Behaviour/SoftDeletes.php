@@ -2,15 +2,16 @@
 
 namespace Oxygen\Data\Behaviour;
 
+use Doctrine\ORM\Mapping as ORM;
 use Carbon\Carbon;
 use DateTime;
 
 trait SoftDeletes {
 
     /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      * @var DateTime|null
      */
+    #[ORM\Column(name: 'deleted_at', type: 'datetime', nullable: true)]
     protected ?DateTime $deletedAt = null;
 
     /**
