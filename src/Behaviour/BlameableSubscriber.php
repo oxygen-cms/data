@@ -3,7 +3,8 @@
 namespace Oxygen\Data\Behaviour;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Illuminate\Auth\AuthManager;
 
@@ -30,11 +31,11 @@ class BlameableSubscriber implements EventSubscriber {
     /**
      * Sets created_by and updated_by columns
      *
-     * @param LifecycleEventArgs $args
+     * @param PrePersistEventArgs $args
      * @return void
      */
-    public function prePersist(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
+    public function prePersist(PrePersistEventArgs $args) {
+        $entity = $args->getObject();
         if($entity instanceof Blameable) {
             $user = $this->authManager->guard()->user();
             $entity->setCreatedBy($user);
@@ -45,11 +46,11 @@ class BlameableSubscriber implements EventSubscriber {
     /**
      * Sets updated_by column
      *
-     * @param LifecycleEventArgs $args
+     * @param PreUpdateEventArgs $args
      * @return void
      */
-    public function preUpdate(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
+    public function preUpdate(PreUpdateEventArgs $args) {
+        $entity = $args->getObject();
         if($entity instanceof Blameable) {
             $user = $this->authManager->guard()->user();
             $entity->setUpdatedBy($user);
