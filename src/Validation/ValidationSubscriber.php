@@ -78,7 +78,7 @@ class ValidationSubscriber implements EventSubscriber {
     }
 
     /**
-     * @param PrePersistEventArgs|PreUpdateEventArgs $args
+     * @param PreUpdateEventArgs $args
      * @throws InvalidEntityException
      */
     public function preUpdate(PreUpdateEventArgs $args) {
