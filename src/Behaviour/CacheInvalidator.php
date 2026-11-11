@@ -2,12 +2,11 @@
 
 namespace Oxygen\Data\Behaviour;
 
+use Doctrine\ORM\Mapping as ORM;
 
 trait CacheInvalidator {
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $cacheInvalidationSettings;
 
     /**

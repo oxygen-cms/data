@@ -4,7 +4,8 @@ namespace Oxygen\Data\Validation;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Oxygen\Data\Exception\InvalidEntityException;
 
 class ValidationSubscriber implements EventSubscriber {
@@ -37,13 +38,13 @@ class ValidationSubscriber implements EventSubscriber {
     /**
      * Performs validation before the entity is persisted.
      *
-     * @param LifecycleEventArgs $args
+     * @param PrePersistEventArgs|PreUpdateEventArgs $args
      * @throws InvalidEntityException if the entity is invalid
      * @return void
      */
-    protected function validate(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
-        $metadata = $args->getEntityManager()->getClassMetadata(get_class($entity));
+    protected function validate(PrePersistEventArgs|PreUpdateEventArgs $args) {
+        $entity = $args->getObject();
+        $metadata = $args->getObjectManager()->getClassMetadata(get_class($entity));
         if($this->shouldBeValidated($entity)) {
             $rules = $entity->getValidationRules();
             $fields = $metadata->getFieldNames();
@@ -72,15 +73,15 @@ class ValidationSubscriber implements EventSubscriber {
     /**
      * @throws InvalidEntityException
      */
-    public function prePersist(LifecycleEventArgs $args) {
+    public function prePersist(PrePersistEventArgs $args) {
         $this->validate($args);
     }
 
     /**
-     * @param LifecycleEventArgs $args
+     * @param PreUpdateEventArgs $args
      * @throws InvalidEntityException
      */
-    public function preUpdate(LifecycleEventArgs $args) {
+    public function preUpdate(PreUpdateEventArgs $args) {
         $this->validate($args);
     }
 

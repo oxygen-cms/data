@@ -8,9 +8,7 @@ trait Authentication {
 
     use RememberToken;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     private $password;
 
     /**

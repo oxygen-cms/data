@@ -2,21 +2,22 @@
 
 namespace Oxygen\Data\Behaviour;
 
+use Doctrine\ORM\Mapping as ORM;
 use Carbon\Carbon;
 use DateTime;
 
 trait Timestamps {
 
     /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
      * @var \DateTime|null
      */
+    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private ?DateTime $createdAt = null;
 
     /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      * @var \DateTime|null
      */
+    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private ?DateTime $updatedAt = null;
 
     /**
@@ -35,9 +36,7 @@ trait Timestamps {
         $this->overrideUpdatedAt = true;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function prePersist() {
         $now = new DateTime();
         $this->createdAt = $now;
@@ -46,9 +45,7 @@ trait Timestamps {
         }
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function preUpdate() {
         if(!$this->overrideUpdatedAt) {
             $this->updatedAt = new DateTime();

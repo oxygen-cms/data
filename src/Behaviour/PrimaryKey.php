@@ -2,13 +2,12 @@
 
 namespace Oxygen\Data\Behaviour;
 
+use Doctrine\ORM\Mapping as ORM;
 trait PrimaryKey {
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
 
     private $id;
 
