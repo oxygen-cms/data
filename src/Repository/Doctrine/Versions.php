@@ -4,6 +4,7 @@ namespace Oxygen\Data\Repository\Doctrine;
 
 use Carbon\Carbon;
 use Oxygen\Data\Behaviour\HasUpdatedAt;
+use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Versionable;
 use phpDocumentor\Reflection\DocBlock\Tags\Version;
 use Webmozart\Assert\Assert;
@@ -76,6 +77,11 @@ trait Versions {
      */
     protected function needsNewVersion(Versionable $entity): bool {
         if(!$entity->isHead()) {
+            return false;
+        }
+
+        // a brand new entity has no history to snapshot (and cloning it would reference an unpersisted head)
+        if($entity instanceof PrimaryKeyInterface && $entity->getId() === null) {
             return false;
         }
 
