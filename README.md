@@ -4,9 +4,22 @@ This repository contains the Oxygen Data Layer.
 
 For more information visit the [Core](https://github.com/oxygen-cms/core) repository.
 
-## Doctrine 2 Wrapper
+## Requirements
 
-The `data` package is focused around the robust Doctrine 2 ORM.
+- PHP 8.3+
+- Laravel 12
+- Doctrine ORM 3 (via [`laravel-doctrine/orm`](https://github.com/laravel-doctrine/orm) ^3.1)
+
+## Doctrine Wrapper
+
+The `data` package is focused around the robust Doctrine ORM (v3). Entity mappings use PHP attributes.
+
+## Development
+
+```
+composer install
+composer test   # phpunit + phpstan
+```
 
 ## Behaviours
 
