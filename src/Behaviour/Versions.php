@@ -58,6 +58,18 @@ trait Versions {
     }
 
     /**
+     * Returns the raw head version association (null if this entity is itself the head).
+     *
+     * Needed because Doctrine's in-memory Criteria matching (ClosureExpressionVisitor)
+     * calls "get" . $field, e.g. getheadVersion(), which Accessors::__call can't resolve.
+     *
+     * @return object|null
+     */
+    public function getHeadVersion() {
+        return $this->headVersion;
+    }
+
+    /**
      * Sets the head version.
      *
      * @param object $head
