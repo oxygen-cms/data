@@ -19,7 +19,9 @@ trait Accessors {
      * @throws \ReflectionException
      */
     public function __call($method, $args) {
-        if(!preg_match('/(?P<accessor>set|get)(?P<property>[A-Z][a-zA-Z0-9]*)/', $method, $match) ||
+        // The property's first letter may be lowercase: Doctrine's in-memory Criteria matching
+        // calls "get" . $field verbatim (e.g. getheadVersion), and PHP methods are case-insensitive.
+        if(!preg_match('/^(?P<accessor>set|get)(?P<property>[a-zA-Z][a-zA-Z0-9]*)$/', $method, $match) ||
            !property_exists(__CLASS__, $match['property'] = lcfirst($match['property']))
         ) {
             throw new BadMethodCallException('Property \'' . $method . '\' does not exist in class ' . __CLASS__);
