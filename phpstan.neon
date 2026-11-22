@@ -1,0 +1,4 @@
+parameters:
+    ignoreErrors:
+        # This is a library: the traits are consumed by downstream applications.
+        - '#^Trait .+ is used zero times and is not analysed\.$#'

@@ -43,7 +43,7 @@ class DoctrinePresenceVerifier implements PresenceVerifierInterface {
      * @param string $collection
      * @param string $column
      * @param string $value
-     * @param int $excludeId
+     * @param int|string|null $excludeId
      * @param string $idColumn
      * @param array $extra
      * @return int
